@@ -4,6 +4,8 @@ namespace Core.Entities;
 
 public class Customer
 {
+    public object customer;
+
     public int Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
