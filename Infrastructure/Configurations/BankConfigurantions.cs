@@ -11,6 +11,7 @@ namespace Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Bank> entity)
         {
             entity.HasKey(e => e.Id).HasName("Bank_pkey");
+
             entity.Property(e => e.Name).HasMaxLength(100);
 
             entity.Property(e => e.Phone).HasMaxLength(20);
