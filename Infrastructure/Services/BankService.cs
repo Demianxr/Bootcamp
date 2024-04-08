@@ -26,7 +26,7 @@ public class BankService : IBankService
         return await _bankRepository.Add(model);
     }
 
-    
+
 
     public async Task<bool> Delete(int id)
     {
@@ -47,4 +47,5 @@ public class BankService : IBankService
     {
         return await _bankRepository.Update(model);
     }
-}
+
+    }

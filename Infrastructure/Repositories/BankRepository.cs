@@ -124,5 +124,10 @@ namespace Infrastructure.Repositories
 
             return bankDTO;
         }
+
+        public Task<BankDTO> Update(UpdateBnakModel model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

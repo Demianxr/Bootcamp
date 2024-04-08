@@ -29,9 +29,9 @@ public class BankController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateBankModel request)
+    public async Task<IActionResult> Update([FromBody] Core.Models.UpdateBankModel request)
     {
-        return Ok(await _service.Update(request));
+        return Ok(await _Service.Update(request));
     }
 
     [HttpDelete("{id}")]

@@ -1,13 +1,15 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Requests;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Core.Interfaces.Services
+namespace Infrastructure.Services;
+
+public interface ICustomerService
 {
-    public interface ICustomerService
-    {
-        Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter);
-    }
+    Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter);
+    Task<customerDTO> Add(CreateCustomerModel model);
+    Task<customerDTO> GetById(int id);
+    Task<customerDTO> Update(CreateCustomerModel model);
+    Task<bool> Delete(int id);
+    Task<List<CustomerDTO>> GetAll();
 }
