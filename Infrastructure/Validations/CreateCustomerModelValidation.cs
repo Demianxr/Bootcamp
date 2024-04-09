@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces.Repositories;
+using Core.Request;
 using FluentValidation;
 
 namespace Infrastructure.Validations

@@ -1,8 +1,9 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Core.Models;
+using Core.Request;
 using Core.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Controllers;
 
@@ -29,9 +30,9 @@ public class BankController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] Core.Models.UpdateBankModel request)
+    public async Task<IActionResult> Update([FromBody] UpdateBankModel request)
     {
-        return Ok(await _Service.Update(request));
+        return Ok(await _service.Update(request));
     }
 
     [HttpDelete("{id}")]

@@ -6,6 +6,8 @@ namespace Infrastructure.Contexts;
 
 public partial class BootcampContext : DbContext
 {
+    internal readonly object Customer;
+
     public BootcampContext()
     {
     }
@@ -19,7 +21,7 @@ public partial class BootcampContext : DbContext
 
     public virtual DbSet<SavingAccount> SavingAccounts { get; set; }
 
-    public virtual DbSet<Customer> Customers { get; set; }
+    public virtual DbSet<Currency> Customers { get; set; }
 
     public virtual DbSet<Account> Accounts { get; set; }
 

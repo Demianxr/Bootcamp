@@ -5,215 +5,148 @@ using Core.Models;
 using Core.Request;
 using Core.Requests;
 using Infrastructure.Contexts;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Net;
-using System.Numerics;
-using System.Xml.Linq;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories;
+
+public class CustomerRepository : ICustomerRepository
 {
-    public class CustomerRepository : ICustomerRepository
+    private readonly BootcampContext _context;
+
+    public CustomerRepository(BootcampContext context)
     {
-        private readonly BootcampContext _context;
+        _context = context;
+    }
+    public async Task<CustomerDTO> Add(CreateCustomerModel model)
+    {
+        var bank = await _context.Banks.FindAsync(model.BankId);
 
-        public CustomerRepository(BootcampContext context)
+        var customerToCreate = model.Adapt<Customer>();
+
+        _context.Add(customerToCreate);
+        await _context.SaveChangesAsync();
+
+        var customerDTO = customerToCreate.Adapt<CustomerDTO>();
+
+        return customerDTO;
+    }
+
+
+    public async Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter)
+    {
+        var query = _context.Customers
+            .Include(c => c.Bank)
+            .AsQueryable();
+
+        if (filter.BirthYearFrom is not null)
         {
-            _context = context;
+            query = query.Where(x =>
+                x.Birth != null &&
+                x.Birth.Value.Year >= filter.BirthYearFrom);
+        }
+
+        if (filter.BirthYearTo is not null)
+        {
+            query = query.Where(x =>
+                x.Birth != null &&
+                x.Birth.Value.Year <= filter.BirthYearTo);
 
         }
 
-
-        public async Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter)
+        if (filter.FullName is not null)
         {
-            var query = _context.Customers
-                .Include(c => c.Bank)
-                .AsQueryable();
-
-            if (filter.BirthYearFrom is not null)
-            {
-                query = query.Where(x =>
-                    x.Birth != null &&
-                    x.Birth.Value.Year >= filter.BirthYearFrom);
-            }
-
-            if (filter.BirthYearTo is not null)
-            {
-                query = query.Where(x =>
-                    x.Birth != null &&
-                    x.Birth.Value.Year <= filter.BirthYearTo);
-            }
-
-            var result = await query.ToListAsync();
-
-            return result.Select(x => new CustomerDTO
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Lastname = x.Lastname,
-                DocumentNumber = x.DocumentNumber,
-                Address = x.Address,
-                Mail = x.Mail,
-                Phone = x.Phone,
-                CustomerStatus = nameof(x.CustomerStatus),
-                Birth = x.Birth,
-                Bank = new BankDTO
-                {
-                    Id = x.Bank.Id,
-                    Name = x.Bank.Name,
-                    Phone = x.Bank.Phone,
-                    Mail = x.Bank.Mail,
-                    Address = x.Bank.Address
-                }
-            }).ToList();
-
-        }
-
-        public async Task<CustomerDTO> Add(CreateCustomerModel model, CustomerDTO customerDTO)
-        {
-            var CustomerCreate = new Customer
-            {
-                Name = model.Name,
-                Lastname = model.LastName,
-                DocumentNumber = model.DocumentNumer,
-                Address = model.Address,
-                Mail = model.Mail,
-                Phone = model.Phone,
-                CustomerStatus = model.customerStatus,
-                BankId = model.BankId,
-                Birth = model.Bank,
-
-            };
-
-            _context.Customers.Add(CustomerCreate);
-
-            await _context.SaveChangesAsync();
-            var customer = new Customer
-            {
-                Name = CustomerCreate.Name,
-                Lastname = CustomerCreate.Lastname,
-                DocumentNumber = CustomerCreate.DocumentNumber,
-                Address = CustomerCreate.Address,
-                Mail = CustomerCreate.Mail,
-                Phone = CustomerCreate.Phone,
-                CustomerStatus = CustomerCreate.CustomerStatus,
-                BankId = CustomerCreate.BankId,
-                Birth = CustomerCreate.Birth,
-
-            };
-
-            return customerDTO;
-
-        }
-
-        public async Task<bool> Delate(int id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null) throw new Exception("customer not found");
-            _context.Customers.Remove(customer);
-            var result = await _context.SaveChangesAsync();
-            return result > 0 && result < 1;
+            query = query.Where(x =>
+                (x.Name + " " + x.Lastname).Equals(filter.FullName));
         }
 
 
-        public async Task<List<CustomerDTO>> GetAll(List<CustomerDTO> CustomerDTO)
+        if (filter.DocumentNumber is not null)
         {
-            var customers = await _context.Customers.ToListAsync();
-
-            var CustomersDTO = customers.Select(customers => new customerDTO
-            {
-                Name = customers.Name,
-                Lastname = customers.Lastname,
-                DocumentNumber = customers.DocumentNumber,
-                Address = customers.Address,
-                Mail = customers.Mail,
-                Phone = customers.Phone,
-                Birth = customers.Birth,
-            }).ToList();
-
-            return CustomerDTO;
+            query = query.Where(x =>
+                 x.DocumentNumber != null &&
+                (x.DocumentNumber).Equals(filter.DocumentNumber));
         }
 
-
-        public async Task<CustomerDTO> GetById(int id)
+        if (filter.Mail is not null)
         {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer is null) throw new Exception("customer not found");
-
-            var customerDTO = new CustomerDTO
-            {
-                Name = customer.Name,
-                Lastname = customer.Lastname,
-                DocumentNumber = customer.DocumentNumber,
-                Address = customer.Address,
-                Mail = customer.Mail,
-                Phone = customer.Mail,
-                Birth = customer.Birth,
-            };
-
-            return customerDTO;
-
+            query = query.Where(x =>
+                 x.Mail != null &&
+                (x.Mail).Equals(filter.Mail));
         }
 
-        public async Task<bool> NameIsAlreadyTaken(string name)
+        if (filter.BankId is not null)
         {
-            return await _context.Customers.AnyAsync(Customer => Customer.Name == name);
+            query = query.Where(x =>
+                (x.BankId).Equals(filter.BankId));
         }
 
-        public async Task<CustomerDTO> Update(UpdateCustomerModel model)
-        {
-            var customer = await _context.Customers.FindAsync(model.Id);
+        var result = await query.ToListAsync();
+        var customerDTO = result.Adapt<List<CustomerDTO>>();
+        return customerDTO;
 
-            if (customer is null) throw new Exception("Bank was not found");
+    }
 
-            customer.Name = model.Name;
-            customer.Lastname = model.Lastname;
-            customer.DocumentNumber = model.DocumentNumber;
-            customer.Address = model.Address;
-            customer.Mail = model.Mail;
-            customer.Phone = model.Phone;
-            customer.CustomerStatus = model.CustomerStatus;
-            customer.BankId = model.BankId;
-            customer.Birth = model.Birth;
+    public async Task<bool> Delete(int id)
+    {
+        var customer = await _context.Customers.FindAsync(id);
 
-            _context.Customers.Update(customer);
+        if (customer is null) throw new Exception("Customer not found");
 
-            await _context.SaveChangesAsync();
+        _context.Customers.Remove(customer);
 
-            var customerDTO = new CustomerDTO
-            {
-                Name = customer.Name,
-                Lastname = customer.Lastname,
-                DocumentNumber = customer.DocumentNumber,
-                Address = customer.Address,
-                Mail = customer.Mail,
-                Phone = customer.Phone,
-                Birth = customer.Birth,
-            };
+        var result = await _context.SaveChangesAsync();
 
-            return customerDTO;
-        }
+        return result > 0;
+    }
 
-        public Task<CustomerDTO> Add(CreateCustomerModel model)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<List<CustomerDTO>> GetAll()
+    {
+        var banks = await _context.Banks.ToListAsync();
 
-        public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+        var customers = await _context.Customers.ToListAsync();
 
-        public Task<List<CustomerDTO>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+        var customersDTO = customers.Adapt<List<CustomerDTO>>();
 
-        public Task<BankDTO> Add(CreateBankModel model)
-        {
-            throw new NotImplementedException();
-        }
+        return customersDTO;
+    }
+
+    public async Task<CustomerDTO> GetById(int id)
+    {
+        var banks = await _context.Banks.ToListAsync();
+
+        var customer = await _context.Customers.FindAsync(id);
+
+        if (customer is null) throw new Exception("Customer not found");
+
+        var customerDTO = customer.Adapt<CustomerDTO>();
+
+        return customerDTO;
+    }
+
+    public async Task<bool> NameIsAlreadyTaken(string name)
+    {
+        return await _context.Customers.AnyAsync(customer => customer.Name == name);
+    }
+
+
+    public async Task<CustomerDTO> Update(UpdateCustomerModel model)
+    {
+        var bank = await _context.Banks.FindAsync(model.BankId);
+
+        var customer = await _context.Customers.FindAsync(model.Id);
+
+        if (customer is null) throw new Exception("Customer was not found");
+
+        model.Adapt(customer);
+
+        _context.Customers.Update(customer);
+
+        await _context.SaveChangesAsync();
+
+        var customerDTO = customer.Adapt<CustomerDTO>();
+
+        return customerDTO;
     }
 }
 

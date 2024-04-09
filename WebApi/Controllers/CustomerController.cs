@@ -1,5 +1,4 @@
-﻿using Core.Interfaces.Repositories;
-using Core.Interfaces.Services;
+﻿using Core.Request;
 using Core.Requests;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ public class CustomerController : BaseApiController
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] UpdateCustomerModel request)
     {
-        return Ok(await _CustomerService.Update(request)); 
+        return Ok(await _customerService.Update(request));
     }
 
     [HttpDelete("{id}")]
