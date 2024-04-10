@@ -13,9 +13,9 @@ public class Account
 
     public int CurrencyId { get; set; }
     public Currency Currency { get; set; } = null!;
-    
+
     public int CustomerId { get; set; }
-    public Currency Customer { get; set; } = null!;
+    public Customer Customer { get; set; } = null!;
 
     public virtual ICollection<SavingAccount> SavingAccounts { get; set; } = new List<SavingAccount>();
     public virtual ICollection<CurrentAccount> CurrentAccounts { get; set; } = new List<CurrentAccount>();

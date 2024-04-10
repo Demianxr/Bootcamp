@@ -1,16 +1,15 @@
 ﻿using Core.Interfaces.Services;
 using Core.Request;
 using Core.Requests;
-using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
     public class CurrencyController : BaseApiController
     {
-        private readonly IcurrencyService _currencyService;
+        private readonly ICurrencyService _currencyService;
 
-        public CurrencyController(IcurrencyService currencyService)
+        public CurrencyController(ICurrencyService currencyService)
         {
             _currencyService = currencyService;
         }

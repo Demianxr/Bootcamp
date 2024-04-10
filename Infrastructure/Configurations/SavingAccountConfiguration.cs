@@ -2,18 +2,25 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class SavingAccountConfiguration : IEntityTypeConfiguration<SavingAccount>
 {
-    public class SavingAccountConfiguration : IEntityTypeConfiguration<SavingAccount>
+    public void Configure(EntityTypeBuilder<SavingAccount> entity)
     {
-        public void Configure(EntityTypeBuilder<SavingAccount> entity)
-        {
-            entity.HasKey(e => e.Id).HasName("SavingAccount_pkey");
-            entity.Property(e => e.HolderName).HasMaxLength(100).IsRequired();
+        entity
+           .HasKey(e => e.Id)
+           .HasName("SavingAccount_pkey");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.SavingAccounts)
-           .HasForeignKey(d => d.AccountId);
+        entity
+            .Property(e => e.HolderName)
+            .HasMaxLength(100)
+            .IsRequired();
 
-        }
+
+        entity
+            .HasOne(d => d.Account)
+            .WithMany(p => p.SavingAccounts)
+            .HasForeignKey(d => d.AccountId);
     }
 }

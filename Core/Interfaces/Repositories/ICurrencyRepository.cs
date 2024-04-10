@@ -7,9 +7,9 @@ namespace Core.Interfaces.Repositories;
 public interface ICurrencyRepository
 {
     Task<List<CurrencyDTO>> GetFiltered(FilterCurrencyModel filter);
-    Task<BankDTO> Add(CreateBankModel model);
-    Task<BankDTO> GetById(int id);
-    Task<BankDTO> Update(UpdateBankModel model);
+    Task<CurrencyDTO> Add(CreateCurrencyModel model);
+    Task<CurrencyDTO> GetById(int id);
+    Task<CurrencyDTO> Update(UpdateCurrencyModel model);
     Task<bool> Delete(int id);
     Task<List<CurrencyDTO>> GetAll();
 }

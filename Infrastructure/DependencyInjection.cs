@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 namespace Infrastructure;
 
@@ -19,6 +21,8 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddRepositories();
         services.AddServices();
+        services.AddMapping();
+        services.AddValidation();
 
         return services;
     }
@@ -38,6 +42,9 @@ public static class DependencyInjection
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IBankRepository, BankRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+        services.AddScoped<ICreditCardRepository, CreditCardRepository>();
 
         return services;
     }
@@ -45,6 +52,10 @@ public static class DependencyInjection
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IBankService, BankService>();
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<ICurrencyService, CurrencyService>();
+        services.AddScoped<ICreditCardService, CreditCardService>();
+
 
         return services;
     }
@@ -58,7 +69,13 @@ public static class DependencyInjection
         services.AddScoped<IMapper, ServiceMapper>();
 
         return services;
+    }
 
+    public static IServiceCollection AddValidation(this IServiceCollection services)
+    {
+        services.AddFluentValidation();
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        return services;
     }
 }

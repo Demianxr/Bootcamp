@@ -8,38 +8,48 @@ namespace Infrastructure.Services;
 
 public class CustomerService : ICustomerService
 {
-    public Task<CustomerDTO> Add(CreateCustomerModel model)
+    private readonly ICustomerRepository _customerRepository;
+
+    public CustomerService(ICustomerRepository customerRepository)
     {
-        throw new NotImplementedException();
+        _customerRepository = customerRepository;
     }
 
-    public Task<bool> Delete(int id)
+    public async Task<CustomerDTO> Add(CreateCustomerModel model)
     {
-        throw new NotImplementedException();
+        bool nameIsInUse = await _customerRepository.NameIsAlreadyTaken(model.Name);
+
+        if (nameIsInUse)
+        {
+            throw new Exception("Name is already in use");
+        }
+
+        return await _customerRepository.Add(model);
     }
 
-    public Task<List<CustomerDTO>> GetAll()
+    public async Task<bool> Delete(int id)
     {
-        throw new NotImplementedException();
+        return await _customerRepository.Delete(id);
+
     }
 
-    public Task<CustomerDTO> GetById(int id)
+    public async Task<List<CustomerDTO>> GetAll()
     {
-        throw new NotImplementedException();
+        return await _customerRepository.GetAll();
     }
 
-    public Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter)
+    public async Task<CustomerDTO> GetById(int id)
     {
-        throw new NotImplementedException();
+        return await _customerRepository.GetById(id);
     }
 
-    public Task<CustomerDTO> Update(CreateCustomerModel model)
+    public async Task<List<CustomerDTO>> GetFiltered(FilterCustomersModel filter)
     {
-        throw new NotImplementedException();
+        return await _customerRepository.GetFiltered(filter);
     }
 
-    public Task<object?> Update(UpdateCustomerModel request)
+    public async Task<CustomerDTO> Update(UpdateCustomerModel model)
     {
-        throw new NotImplementedException();
+        return await _customerRepository.Update(model);
     }
 }

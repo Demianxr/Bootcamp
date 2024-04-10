@@ -1,26 +1,28 @@
 ﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
 {
-    public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
+    public void Configure(EntityTypeBuilder<Currency> entity)
     {
+        entity.ToTable("Currencies");
+        entity
+            .HasKey(e => e.Id)
+            .HasName("Currency_pkey");
 
-        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Currency> entity)
-        {
-            entity.HasKey(e => e.Id).HasName("currency_pkey");
+        entity
+            .Property(e => e.Name)
+            .HasMaxLength(100).IsRequired();
 
-            entity.Property(e => e.Name).HasMaxLength(100);
+        entity
+            .Property(e => e.BuyValue)
+            .HasMaxLength(100).IsRequired();
 
-            entity.Property(e => e.BuyValue).HasMaxLength(100);
-
-            entity.Property(e => e.SellValue).HasMaxLength(100).IsRequired();
-
-            entity
-                .HasOne(d => d.Bank)
-                .WithMany(p => p.Customers)
-                .HasForeignKey(d => d.BankId);
-
-        }
+        entity
+            .Property(e => e.SellValue)
+            .HasMaxLength(100).IsRequired();
     }
 }

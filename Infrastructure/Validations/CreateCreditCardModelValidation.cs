@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Infrastructure.Validations
 {
-    public class CreateCreditCardModelValidation : AbstractValidator<CreateCreditCardModel>
+    public class CreateCustomerModelValidation : AbstractValidator<CreateCreditCardModel>
     {
-        public CreateCreditCardModelValidation()
+        public CreateCustomerModelValidation()
         {
             RuleFor(x => x.Designation)
                 .NotNull().WithMessage("Designation cannot be null")
@@ -14,7 +14,7 @@ namespace Infrastructure.Validations
 
             RuleFor(x => x.IssueDate)
                 .NotEmpty().WithMessage("Issue Date cannot be empty")
-                .When(x => x.IssueDate != null); // Optional, pero asegura que la fecha no esté vacía si se proporciona
+                .When(x => x.IssueDate != null); 
 
             RuleFor(x => x.ExpirationDate)
                 .NotNull().WithMessage("Expiration Date cannot be null")
@@ -23,10 +23,18 @@ namespace Infrastructure.Validations
             RuleFor(x => x.CardNumber)
                 .NotNull().WithMessage("Card Number cannot be null")
                 .NotEmpty().WithMessage("Card Number cannot be empty")
-                .Matches(@"^\d{12}$").WithMessage("Card Number must have 12 digits")
-                .WithMessage("Card Number must have 16 characters")
-                .Matches(@"^[0-9]{12}$").WithMessage("Card Number must have 12 digits")
-                .Length(16).WithMessage("Card Number must have 16 characters");
+                .MinimumLength(16)
+                .WithMessage("Card Number must have 16 characters");
+
+            RuleFor(x => x.Designation)
+                .NotNull().WithMessage("Designation cannot be null")
+                .NotEmpty().WithMessage("Designation cannot be empty")
+                .Length(1, 255).WithMessage("Designation must be between 1 and 255 characters");
+
+            RuleFor(x => x.CurrencyId)
+                .NotNull().WithMessage("CurrencyId cannot be null")
+                .GreaterThan(0).WithMessage("CurrencyId must be a positive integer");
+
 
             RuleFor(x => x.CreditCardStatus)
                 .MaximumLength(100).WithMessage("Credit Card Status cannot exceed 100 characters");
@@ -45,3 +53,4 @@ namespace Infrastructure.Validations
         }
     }
 }
+

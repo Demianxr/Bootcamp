@@ -2,15 +2,15 @@
 using Core.Request;
 using FluentValidation;
 
-namespace Infrastructure.Validetions;
+namespace Infrastructure.Validations;
 
-public class CreateCustomerModelValidation : AbstractValidator<CreateCustomerModel>
+public class UpdateCostumerModelValidation : AbstractValidator<UpdateCustomerModel>
 {
-    public CreateCustomerModelValidation()
+    public UpdateCostumerModelValidation()
     {
         RuleFor(x => x.Name)
-            .NotNull().WithMessage("Name cannot be null")
-            .NotEmpty().WithMessage("Name cannot be empty");
+           .NotNull().WithMessage("Name cannot be null")
+           .NotEmpty().WithMessage("Name cannot be empty");
 
         RuleFor(x => x.BankId)
             .NotNull().WithMessage("Name cannot be null")

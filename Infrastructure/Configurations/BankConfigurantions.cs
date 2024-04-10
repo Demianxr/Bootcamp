@@ -1,30 +1,40 @@
-﻿using AngleSharp.Dom;
+﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using Core.Entities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class BankConfiguration : IEntityTypeConfiguration<Bank>
 {
-    public class BankConfigurantions : IEntityTypeConfiguration<Bank>
+    public void Configure(EntityTypeBuilder<Bank> entity)
     {
+        entity
+            .HasKey(e => e.Id)
+            .HasName("Bank_pkey");
 
-        public void Configure(EntityTypeBuilder<Bank> entity)
-        {
-            entity.HasKey(e => e.Id).HasName("Bank_pkey");
+        entity
+            .Property(e => e.Name)
+            .HasMaxLength(100)
+            .IsRequired();
 
-            entity.Property(e => e.Name).HasMaxLength(100);
+        entity
+            .Property(e => e.Phone)
+            .HasMaxLength(100)
+            .IsRequired();
 
-            entity.Property(e => e.Phone).HasMaxLength(20);
+        entity.Property(e => e.Mail)
+            .HasMaxLength(100)
+            .IsRequired();
 
-            entity.Property(e => e.Mail).HasMaxLength(100);
+        entity
+            .Property(e => e.Address)
+            .HasMaxLength(100)
+            .IsRequired();
 
-            entity.Property(e => e.Address).HasMaxLength(100);
 
-            entity
+        entity
             .HasMany(bank => bank.Customers)
             .WithOne(customer => customer.Bank)
-            .HasForeignKey(customer => customer.BankId);
-
-        }
+            .HasForeignKey(costumer => costumer.BankId);
     }
 }
