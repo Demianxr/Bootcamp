@@ -27,8 +27,8 @@ namespace Infrastructure.Mappings
                 .Map(dest => dest.CreditCardStatus, src => src.CreditCardStatus)
                 .Map(dest => dest.CreditLimit, src => src.CreditLimit)
                 .Map(dest => dest.InterestRate, src => src.InterestRate)
-                .Map(dest => dest.Availablecredit, src => src.Availablecredit)
-                .Map(dest => dest.Currentdebt, src => src.Currentdebt);
+                .Map(dest => dest.AvailableCredit, src => src.Availablecredit)
+                .Map(dest => dest.CurrentDebt, src => src.Currentdebt);
         }
     }
 }
