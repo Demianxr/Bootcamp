@@ -1,4 +1,5 @@
 ﻿using Core.Request;
+using Core.Requests;
 using FluentValidation;
 
 namespace Infrastructure.Validations
@@ -15,12 +16,7 @@ namespace Infrastructure.Validations
                 .NotNull().WithMessage("Number cannot be null")
                 .NotEmpty().WithMessage("Number cannot be empty");
 
-            RuleFor(x => x.Type)
-                .NotNull().WithMessage("Type cannot be null")
-                .NotEmpty().WithMessage("Type cannot be empty");
-
-
-
+         
             RuleFor(x => x.CurrencyId)
                 .GreaterThan(0).WithMessage("CurrencyId must be greater than 0");
 

@@ -2,6 +2,7 @@
 using Core.Models;
 using Core.Request;
 using Core.Requests;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -17,40 +18,13 @@ namespace WebApi.Controllers
             _accountService = accountService;
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+       => Ok(await _accountService.GetById(id));
+
         [HttpPost]
-        public async Task<ActionResult<AccountDTO>> Add(CreateAccountModel model)
-        {
-            var accountDTO = await _accountService.Add(model);
-
-            if (accountDTO is null)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create account");
-            }
-
-            return Ok(accountDTO);
-        }
-
-
-
-        [HttpGet("filter")]
-        public async Task<ActionResult<List<AccountDTO>>> GetFiltered([FromQuery] FilterAccountModel filter)
-        {
-            var accounts = await _accountService.GetFiltered(filter);
-
-            return Ok(accounts);
-        }
-
-        [HttpPut("update")]
-        public async Task<ActionResult<AccountDTO>> Update(UpdateAccountModel model)
-        {
-            var accountDTO = await _accountService.Update(model);
-
-            if (accountDTO is null)
-            {
-                return NotFound("Account not found");
-            }
-
-            return Ok(accountDTO);
-        }
+        public async Task<IActionResult> Create([FromBody] Core.Requests.CreateAccountRequest request)
+            => Ok(await _accountService.Create(request));
     }
+
 }

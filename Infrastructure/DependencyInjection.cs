@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Core.Interfaces;
+using Core.Services;
+using Core.Models;
 
 namespace Infrastructure;
 
@@ -46,6 +49,8 @@ public static class DependencyInjection
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ICreditCardRepository, CreditCardRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IPromotionRepository, PromotionRepository>();
+        services.AddScoped<IBusinessRepository, BusinessRepository>();
 
         
 
@@ -60,6 +65,10 @@ public static class DependencyInjection
         services.AddScoped<ICreditCardService, CreditCardService>();
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IPromotionService, PromotionService>();
+        
+        
+
 
         return services;
     }

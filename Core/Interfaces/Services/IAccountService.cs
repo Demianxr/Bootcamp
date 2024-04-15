@@ -10,5 +10,7 @@ namespace Core.Interfaces.Services
         Task<AccountDTO> Add(CreateAccountModel model);
         Task<AccountDTO> Update(UpdateAccountModel model);
         Task<bool> Delete(int id);
+        Task<AccountDTO> Create(CreateAccountRequest request);
+        Task<AccountDTO> GetById(int id);
     }
 }

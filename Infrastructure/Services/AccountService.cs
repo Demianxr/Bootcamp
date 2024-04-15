@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
 using Core.Requests;
+using Infrastructure.Repositories;
 
 namespace Infrastructure.Services
 {
@@ -15,9 +16,14 @@ namespace Infrastructure.Services
             _accountRepository = accountRepository;
         }
 
-        public async Task<AccountDTO> Add(CreateAccountModel model)
+        public Task<AccountDTO> Add(CreateAccountModel model)
         {
-            return await _accountRepository.Add(model);
+            throw new NotImplementedException();
+        }
+
+        public Task<AccountDTO> Create(Core.Requests.CreateAccountRequest request)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> Delete(int id)
@@ -25,14 +31,20 @@ namespace Infrastructure.Services
             return await _accountRepository.Delete(id);
         }
 
+        public Task<AccountDTO> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
         {
             return await _accountRepository.GetFiltered(filter);
         }
 
-        public async Task<AccountDTO> Update(UpdateAccountModel model)
+        public Task<AccountDTO> Update(UpdateAccountModel model)
         {
-            return await _accountRepository.Update(model);
+            throw new NotImplementedException();
         }
     }
 }
+      

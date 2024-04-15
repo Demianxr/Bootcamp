@@ -2,7 +2,7 @@
 
 namespace Core.Requests;
 
-public class CreateAccountModel
+public class CreateAccountRequest
 {
     public string Holder { get; set; } = string.Empty;
     public string Number { get; set; } = string.Empty;
@@ -11,4 +11,5 @@ public class CreateAccountModel
     public AccountType AccountType { get; set; }
     public CreateSavingAccount? CreateSavingAccount { get; set; }
     public CreateCurrentAccount? CreateCurrentAccount { get; set; }
-}
+ 
+} 
