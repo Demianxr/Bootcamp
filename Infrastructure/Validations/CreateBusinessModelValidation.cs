@@ -1,9 +1,10 @@
 ﻿using Core.Requests;
+using Core.ViewModels;
 using FluentValidation;
 
 namespace Infrastructure.Validations
 {
-    public class CreateBusinessModelValidation : AbstractValidator<CreateBusinessModel>
+    public class CreateBusinessModelValidation : AbstractValidator<CreateEnterpriseModel>
     {
         public CreateBusinessModelValidation()
         {

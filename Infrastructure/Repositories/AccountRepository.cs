@@ -178,8 +178,4 @@ public class AccountRepository : IAccountRepository
         return accountDTO;
     }
 
-    public Task<AccountDTO> Create(Core.Requests.CreateAccountRequest request)
-    {
-        throw new NotImplementedException();
-    }
 }

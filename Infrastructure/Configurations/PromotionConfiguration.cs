@@ -8,26 +8,29 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Promotion> entity)
         {
+            entity.ToTable("Promotions");
+
             entity
                 .HasKey(e => e.Id)
                 .HasName("Promotion_pkey");
 
             entity
-                .Property(e => e.Name)
-                .HasMaxLength(100)
+                .Property(e => e.Start)
                 .IsRequired();
 
             entity
-                .Property(e => e.DurationTime);
+                .Property(e => e.End)
+                .IsRequired();
 
             entity
-                .Property(e => e.PercentageOff)
-                .HasPrecision(20, 5);
+                .Property(e => e.Discount)
+                .IsRequired();
 
+           
             entity
-            .HasOne(d => d.Business)
-            .WithMany(p => p.Promotions)
-            .HasForeignKey(d => d.BunisessId);
+                .HasMany(e => e.PromotionsEnterprises)
+                .WithOne(pe => pe.Promotion)
+                .HasForeignKey(pe => pe.PromotionId);
         }
     }
 }

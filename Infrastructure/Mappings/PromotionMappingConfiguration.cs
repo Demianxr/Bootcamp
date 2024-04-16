@@ -1,7 +1,9 @@
 ﻿using Core.Entities;
 using Core.Models;
-using Core.Requests;
 using Mapster;
+using Core.Requests;
+using Core.ViewModels;
+using Core.DTOs;
 
 namespace Infrastructure.Mappings
 {
@@ -10,15 +12,12 @@ namespace Infrastructure.Mappings
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreatePromotionModel, Promotion>()
-                .Map(dest => dest.Name, src => src.Name)
-                .Map(dest => dest.DurationTime, src => src.DurationTime)
-                .Map(dest => dest.PercentageOff, src => src.PercentageOff);
+                .Map(dest => dest.Start, src => src.Start)
+                .Map(dest => dest.End, src => src.End);
+
 
             config.NewConfig<Promotion, PromotionDTO>()
-                .Map(dest => dest.Id, src => src.Id)
-                .Map(dest => dest.Name, src => src.Name)
-                .Map(dest => dest.DurationTime, src => src.DurationTime)
-                .Map(dest => dest.PercentageOff, src => src.PercentageOff);
+                .Map(dest => dest.Id, src => src.Id);
         }
     }
 }

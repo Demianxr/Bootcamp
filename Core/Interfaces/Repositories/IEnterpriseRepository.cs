@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces.Repositories
 {
-    public interface IPromotionRepository
+    public interface IEnterpriseRepository
     {
         Task<List<CurrencyDTO>> GetFiltered(FilterCurrencyModel filter);
         Task<CurrencyDTO> Add(CreateCurrencyModel model);

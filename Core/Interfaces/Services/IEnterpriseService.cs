@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces.Services
 {
-    public interface IPromotionService
+    public interface IEnterpriseService
     {
         Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter);
         Task<AccountDTO> Add(CreateAccountModel model);
@@ -15,6 +15,5 @@ namespace Core.Interfaces.Services
         Task<bool> Delete(int id);
         Task<AccountDTO> Create(CreateAccountRequest request);
         Task<AccountDTO> GetById(int id);
-        Task GetAllPromotions();
     }
 }

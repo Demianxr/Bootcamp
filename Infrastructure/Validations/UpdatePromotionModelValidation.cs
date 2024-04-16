@@ -1,4 +1,5 @@
 ﻿using Core.Requests;
+using Core.ViewModels;
 using FluentValidation;
 
 namespace Infrastructure.Validations
@@ -12,7 +13,7 @@ namespace Infrastructure.Validations
                 .NotEmpty().WithMessage("Name cannot be empty")
                 .MaximumLength(100).WithMessage("Name cannot exceed 100 characters");
 
-            RuleFor(x => x.DurationTime)
+            RuleFor(x => x.DurationTimeInMinutes)
                 .NotNull().WithMessage("DurationTime cannot be null");
 
             RuleFor(x => x.PercentageOff)

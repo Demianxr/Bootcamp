@@ -50,7 +50,7 @@ public static class DependencyInjection
         services.AddScoped<ICreditCardRepository, CreditCardRepository>();
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IPromotionRepository, PromotionRepository>();
-        services.AddScoped<IBusinessRepository, BusinessRepository>();
+        services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
 
         
 

@@ -1,11 +1,17 @@
-﻿namespace Core.Requests
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Core.ViewModels
 {
     public class CreatePromotionModel
     {
         public string Name { get; set; } = string.Empty;
-        public int? DurationTimeFrom { get; set; }
-        public int? DurationTime { get; set; }
-        public double? PercentageOff { get; set; }
 
+        public DateTime? Start {  get; set; }
+
+        public DateTime? End { get; set; }
+
+        public int discount { get; set; }
+
+        public List<int> RelatedEnterpiseIds { get; set; } = new List<int>();
     }
 }

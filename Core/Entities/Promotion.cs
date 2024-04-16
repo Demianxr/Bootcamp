@@ -1,16 +1,11 @@
-﻿using Core.Models;
+﻿namespace Core.Entities;
 
-namespace Core.Entities
+public class Promotion
 {
-    public class Promotion
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public DateTime? DurationTime { get; set; }
-        public Decimal? PercentageOff { get; set; }
-
-        public int BunisessId { get; set; }
-        public Business Business { get; set; } = null;
-
-    }
+    public int Id { get; set; }
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+    public int Discount { get; set; }
+    public Enterprise Enterprise { get; set; } = null!;
+    public ICollection<PromotionEnterprise> PromotionsEnterprises { get; set; } = new List<PromotionEnterprise>();
 }

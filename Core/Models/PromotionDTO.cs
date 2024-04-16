@@ -1,14 +1,12 @@
-﻿using Core.Entities;
-
-namespace Core.Models
+﻿namespace Core.DTOs
 {
     public class PromotionDTO
     {
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public DateTime? DurationTime { get; set; }
-        public Decimal? PercentageOff { get; set; }
-
-        public BunisessDTO Bunisess { get; set; } = null;
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int DurationTimeInMinutes { get; set; }
+        public decimal PercentageOff { get; set; }
+        public int EnterpriseId { get; set; }
     }
 }

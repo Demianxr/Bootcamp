@@ -1,6 +1,10 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
+using Core.Models;
 using Core.Requests;
+using Core.ViewModels;
+using Mapster;
 
 namespace Core.Services
 {
@@ -12,28 +16,54 @@ namespace Core.Services
         {
             _promotionRepository = promotionRepository;
         }
+        public async Task<PromotionDTO> GetById(int id)
+        {
+            var promotion = await _promotionRepository.GetById(id);
+            return promotion?.Adapt<PromotionDTO>();
+        }
 
-        public Task<int> CreatePromotionAsync(CreatePromotionModel model)
+        public async Task<bool> DeletePromotionAsync(int id)
+        {
+            return await _promotionRepository.Delete(id);
+        }
+
+        public async Task<PromotionDTO> UpdatePromotionAsync(UpdatePromotionModel model)
+        {
+            var promotion = await _promotionRepository.Update(model);
+            return promotion?.Adapt<PromotionDTO>();
+        }
+
+        public Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeletePromotionAsync(int id)
+        public Task<AccountDTO> Add(CreateAccountModel model)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Promotion>> GetAllPromotionsAsync()
+        public Task<AccountDTO> Update(UpdateAccountModel model)
         {
-            return await _promotionRepository.GetAllPromotionsAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Promotion>> GetFilteredPromotionsAsync(string name, TimeSpan? durationTime, decimal? percentageOff)
+        public Task<bool> Delete(int id)
         {
-            return await _promotionRepository.GetFilteredPromotionsAsync(name, durationTime, percentageOff);
+            throw new NotImplementedException();
         }
 
-        public Task<bool> UpdatePromotionAsync(UpdatePromotionModel model)
+        public Task<AccountDTO> Create(CreateAccountRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<AccountDTO> IPromotionService.GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task GetAllPromotions()
         {
             throw new NotImplementedException();
         }
