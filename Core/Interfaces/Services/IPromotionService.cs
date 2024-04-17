@@ -1,20 +1,12 @@
-﻿using Core.Entities;
-using Core.Models;
-using Core.Requests;
-using Core.ViewModels;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Core.Models;
+using Core.Request;
 
-namespace Core.Interfaces.Services
+namespace Core.Interfaces.Services;
+
+public interface IPromotionService
 {
-    public interface IPromotionService
-    {
-        Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter);
-        Task<AccountDTO> Add(CreateAccountModel model);
-        Task<AccountDTO> Update(UpdateAccountModel model);
-        Task<bool> Delete(int id);
-        Task<AccountDTO> Create(CreateAccountRequest request);
-        Task<AccountDTO> GetById(int id);
-        Task GetAllPromotions();
-    }
+    Task<List<PromotionDTO>> GetFiltered(FilterPromotionModel filter);
+    Task<PromotionDTO> Add(CreatePromotionModel model);
+    Task<PromotionDTO> Update(UpdatePromotionModel model);
+    Task<bool> Delete(int id);
 }

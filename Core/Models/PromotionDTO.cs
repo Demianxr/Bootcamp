@@ -1,12 +1,16 @@
-﻿namespace Core.DTOs
+﻿using Core.Entities;
+
+namespace Core.Models;
+
+public class PromotionDTO
 {
-    public class PromotionDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int DurationTimeInMinutes { get; set; }
-        public decimal PercentageOff { get; set; }
-        public int EnterpriseId { get; set; }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+    public int Discount { get; set; }
+
+    public List<EnterpriseDTO> Enterprises { get; set; } = new List<EnterpriseDTO>();
+    //public List<EnterpriseDTO> RelatedEnterprises { get; set; } = new List<EnterpriseDTO>(); // Lista de empresas relacionadas
+
 }

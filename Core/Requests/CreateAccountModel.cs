@@ -1,6 +1,7 @@
 ﻿using Core.Constants;
+using Core.Requests;
 
-namespace Core.Requests;
+namespace Core.Request;
 
 public class CreateAccountModel
 {
@@ -9,6 +10,6 @@ public class CreateAccountModel
     public int CurrencyId { get; set; }
     public int CustomerId { get; set; }
     public AccountType AccountType { get; set; }
-    public CreateSavingAccount? CreateSavingAccount { get; set; }
-    public CreateCurrentAccount? CreateCurrentAccount { get; set; }
+    public CreateSavingAccountModel? CreateSavingAccountModel { get; set; }
+    public CreateCurrentAccountModel? CreateCurrentAccountModel { get; set; }
 }

@@ -1,9 +1,9 @@
-﻿using Core.Constants;
+﻿﻿using Core.Constants;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
-using Core.Requests;
+using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -19,26 +19,50 @@ public class AccountRepository : IAccountRepository
         _context = context;
     }
 
-    public async Task<AccountDTO> Add(CreateAccountRequest model)
+    public async Task<AccountDTO> Add(CreateAccountModel model)
     {
-        var accountToCreate = model.Adapt<Account>();
 
-        _context.Add(accountToCreate);
+        var account = model.Adapt<Account>();
+
+        if (account.AccountType == AccountType.Saving)
+        {
+            account.SavingAccount = model.CreateSavingAccountModel.Adapt<SavingAccount>();
+        }
+
+        if (account.AccountType == AccountType.Current)
+        {
+            account.CurrentAccount = model.CreateCurrentAccountModel.Adapt<CurrentAccount>();
+        }
+
+        _context.Accounts.Add(account);
+
         await _context.SaveChangesAsync();
 
-        var accountDTO = accountToCreate.Adapt<AccountDTO>();
+        var createdAccount = await _context.Accounts
+            .Include(a => a.Currency)
+            .Include(a => a.Customer)
+            .ThenInclude(a => a.Bank)
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == account.Id);
 
-        return accountDTO;
+        return createdAccount.Adapt<AccountDTO>();
     }
 
-    public Task<bool> CurrencyExists(int currencyId)
+    public async Task<AccountDTO> GetById(int id)
     {
-        throw new NotImplementedException();
-    }
+        var account = await _context.Accounts
+            .Include(a => a.Currency)
+            .Include(a => a.Customer)
+            .ThenInclude(a => a.Bank)
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-    public Task<bool> CustomerExists(int customerId)
-    {
-        throw new NotImplementedException();
+        if (account is null) throw new NotFoundException($"The account with id: {id} doest not exist");
+
+        return account.Adapt<AccountDTO>();
+
     }
 
     public async Task<bool> Delete(int id)
@@ -47,67 +71,70 @@ public class AccountRepository : IAccountRepository
 
         if (account is null) throw new Exception("Account not found");
 
-        account.IsDeleted = true;
+        _context.Accounts.Remove(account);
 
         var result = await _context.SaveChangesAsync();
 
         return result > 0;
     }
 
-    public async Task<List<AccountDTO>> GetAll()
+    public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
     {
-        var accounts = await _context.Accounts.ToListAsync();
-        var accountDTOs = accounts.Select(account => account.Adapt<AccountDTO>()).ToList();
-        return accountDTOs;
-    }
 
-    public async Task<AccountDTO> GetById(int id)
-    {
-        var account = await _context.Accounts
-            .Include(a => a.Currency)
-            .Include(a => a.Customer)
-            .Include(a => a.SavingAccount)
-            .Include(a => a.CurrentAccount)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var query = _context.Accounts
+                  .Include(a => a.Currency)
+                  .Include(a => a.Customer)
+                  .ThenInclude(a => a.Bank)
+                  .Include(a => a.SavingAccount)
+                  .Include(a => a.CurrentAccount)
+                  .AsQueryable();
 
-        if (account is null) throw new NotFoundException($"The account with id: {id} doest not exist");
 
-        return account.Adapt<AccountDTO>();
-    }
 
-    public async Task<List<AccountDTO>> GetFiltered(string? number, string? type, int? currencyId, int? customerId)
-    {
-        var query = _context.Accounts.AsQueryable();
-
-        if (!string.IsNullOrEmpty(number))
+        if (filter.CustomerId is not null)
         {
-            query = query.Where(a => a.Number.Contains(number));
+            query = query.Where(x =>
+                (x.CustomerId).Equals(filter.CustomerId));
         }
 
-        if (currencyId.HasValue && currencyId > 0)
+        if (filter.CurrencyId is not null)
         {
-            query = query.Where(a => a.CurrencyId == currencyId);
+            query = query.Where(x =>
+                (x.CurrencyId).Equals(filter.CurrencyId));
         }
 
-        if (customerId.HasValue && customerId > 0)
+        if (filter.AccountType is not null)
         {
-            query = query.Where(a => a.CustomerId == customerId);
+            query = query.Where(x =>
+            x.AccountType == filter.AccountType);
         }
 
-        var accounts = await query.Include(a => a.Currency).ToListAsync();
+        if (filter.Number is not null)
+        {
+            query = query.Where(x =>
+                 x.Number != null &&
+                (x.Number).Equals(filter.Number));
+        }
 
-        var accountDTOs = accounts.Select(account => account.Adapt<AccountDTO>()).ToList();
+        var result = await query.ToListAsync();
 
-        return accountDTOs;
-    }
-
-    public Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
-    {
-        throw new NotImplementedException();
+        var accountDTO = result.Adapt<List<AccountDTO>>();
+        return accountDTO;
     }
 
     public async Task<AccountDTO> Update(UpdateAccountModel model)
     {
+
+        var query = _context.Accounts
+                  .Include(a => a.Currency)
+                  .Include(a => a.Customer)
+                  .ThenInclude(a => a.Bank)
+                  .Include(a => a.SavingAccount)
+                  .Include(a => a.CurrentAccount)
+                  .AsQueryable();
+
+        var result = await query.ToListAsync();
+
         var account = await _context.Accounts.FindAsync(model.Id);
 
         if (account is null) throw new Exception("Account was not found");
@@ -123,59 +150,19 @@ public class AccountRepository : IAccountRepository
         return accountDTO;
     }
 
-
-    public async Task<AccountDTO> Create(CreateAccountRequest request)
+    public async Task<bool> VerifyCustomerExists(int id)
     {
-        /*A modo de ejemplo*/
-        #region PRUEBA
-        var currency = new Currency()
-        {
-            Name = "Dolares Americanos",
-            BuyValue = 10,
-            SellValue = 20,
-        };
-        _context.Currency.Add(currency);
+        var customerDoesntExist = await _context.Customers.AnyAsync(customer => customer.Id == id);
 
-        //throw new Exception("Algo malo pasó");
-        #endregion
+        return !customerDoesntExist;
 
-        var account = request.Adapt<Account>();
-
-        if (account.Type == AccountType.Saving)
-        {
-            account.SavingAccount = request.CreateCurrentAccount.Adapt<SavingAccount>();
-        }
-
-        if (account.Type == AccountType.Current)
-        {
-            account.CurrentAccount = request.CreateCurrentAccount.Adapt<CurrentAccount>();
-        }
-
-        _context.Accounts.Add(account);
-
-        await _context.SaveChangesAsync();
-
-        var createdAccount = await _context.Accounts
-            .Include(a => a.Currency)
-            .Include(a => a.Customer)
-            .Include(a => a.SavingAccount)
-            .Include(a => a.CurrentAccount)
-            .FirstOrDefaultAsync(a => a.Id == account.Id);
-
-        return createdAccount.Adapt<AccountDTO>();
     }
 
-
-    public async Task<AccountDTO> Add(CreateAccountModel model)
+    public async Task<bool> VerifyCurrencyExists(int id)
     {
-        var accountToCreate = model.Adapt<Account>();
+        var currencyDoesntExist = await _context.Currency.AnyAsync(currency => currency.Id == id);
 
-        _context.Add(accountToCreate);
-        await _context.SaveChangesAsync();
+        return !currencyDoesntExist;
 
-        var accountDTO = accountToCreate.Adapt<AccountDTO>();
-
-        return accountDTO;
     }
-
 }

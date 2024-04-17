@@ -1,57 +1,39 @@
 ﻿using Core.Interfaces.Services;
+using Core.Request;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Enterprise.WebApi.Controllers
+namespace WebApi.Controllers;
+
+public class EnterpriseController : BaseApiController
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EnterpriseController : ControllerBase
+    private readonly IEnterpriseService _enterpriseService;
+
+    public EnterpriseController(IEnterpriseService enterpriseService)
     {
-        private readonly IEnterpriseService _enterpriseService;
+        _enterpriseService = enterpriseService;
+    }
 
-        public EnterpriseController(IEnterpriseService enterpriseService)
-        {
-            _enterpriseService = enterpriseService;
-        }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        var enterprise = await _enterpriseService.GetById(id);
+        return Ok(enterprise);
+    }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetEnterpriseById(int id)
-        {
-            var enterprise = await _enterpriseService.GetEnterpriseById(id);
-            if (enterprise == null)
-            {
-                return NotFound(); // Retornar un código 404 si no se encuentra la empresa
-            }
-            return Ok(enterprise);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateEnterprise([FromBody] CreateEnterpriseRequest request)
-        {
-            var createdEnterprise = await _enterpriseService.CreateEnterprise(request);
-            return CreatedAtAction(nameof(GetEnterpriseById), new { id = createdEnterprise.Id }, createdEnterprise);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEnterprise(int id, [FromBody] UpdateEnterpriseRequest request)
-        {
-            var updatedEnterprise = await _enterpriseService.UpdateEnterprise(id, request);
-            if (updatedEnterprise == null)
-            {
-                return NotFound(); // Retornar un código 404 si no se encuentra la empresa
-            }
-            return Ok(updatedEnterprise);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEnterprise(int id)
-        {
-            var isDeleted = await _enterpriseService.DeleteEnterprise(id);
-            if (!isDeleted)
-            {
-                return NotFound(); // Retornar un código 404 si no se encuentra la empresa
-            }
-            return NoContent(); // Retornar un código 204 para indicar que la empresa fue eliminada con éxito
-        }
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateEnterpriseModel request)
+    {
+        return Ok(await _enterpriseService.Add(request));
+    }
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateEnterpriseModel request)
+    {
+        return Ok(await _enterpriseService.Update(request));
+    }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        return Ok(await _enterpriseService.Delete(id));
     }
 }

@@ -11,9 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Core.Interfaces;
-using Core.Services;
-using Core.Models;
 
 namespace Infrastructure;
 
@@ -66,6 +63,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IPromotionService, PromotionService>();
+        services.AddScoped<IEnterpriseService, EnterpriseService>();
         
         
 

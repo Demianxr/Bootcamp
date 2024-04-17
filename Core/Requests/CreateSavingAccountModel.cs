@@ -2,7 +2,7 @@
 
 namespace Core.Requests;
 
-public class CreateSavingAccount
+public class CreateSavingAccountModel
 {
     public SavingType SavingType { get; set; }
 }

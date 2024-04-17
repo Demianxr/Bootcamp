@@ -1,10 +1,8 @@
-﻿using Core.DTOs;
-using Core.Entities;
+﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
-using Core.Requests;
-using Core.ViewModels;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -22,77 +20,109 @@ public class PromotionRepository : IPromotionRepository
 
     public async Task<PromotionDTO> Add(CreatePromotionModel model)
     {
-        var promotionToCreate = model.Adapt<Promotion>();
+        var enterprises = await _context.Enterprises.ToListAsync();
 
-        _context.Add(promotionToCreate);
+        var promotion = model.Adapt<Promotion>();
+
+
+        foreach (int enterpriseId in model.RelatedEnterpriseIds)
+        {
+            var promotionEnterprise = new PromotionEnterprise
+            {
+                Promotion = promotion,
+                EnterpriseId = enterpriseId
+            };
+            _context.PromotionEnterprises.Add(promotionEnterprise);
+        }
+
+        _context.Promotions.Add(promotion);
+
         await _context.SaveChangesAsync();
 
-        var promotionDTO = promotionToCreate.Adapt<PromotionDTO>();
+        var createdPromotion = await _context.Promotions
+            .FirstOrDefaultAsync(a => a.Id == promotion.Id);
+
+
+        var promotionDTO = createdPromotion.Adapt<PromotionDTO>();
 
         return promotionDTO;
     }
 
-    public Task<bool> ProductExists(int productId)
+
+    public async Task<bool> Delete(int id)
     {
-        throw new NotImplementedException();
+        var promotion = await _context.Promotions.FindAsync(id);
+
+        if (promotion is null) throw new NotFoundException($"Promotion with id: {id} doest not exist");
+
+        _context.Promotions.Remove(promotion);
+
+        var result = await _context.SaveChangesAsync();
+
+        return result > 0;
     }
 
-
-    public async Task<List<PromotionDTO>> GetAll()
+    public async Task<List<PromotionDTO>> GetFiltered(FilterPromotionModel filter)
     {
-        var promotions = await _context.Promotion.ToListAsync();
-        var promotionDTOs = promotions.Select(promotion => promotion.Adapt<PromotionDTO>()).ToList();
-        return promotionDTOs;
+        var query = _context.Promotions
+                         .Include(a => a.PromotionsEnterprises)
+                         .ThenInclude(a => a.Enterprise)
+                         .AsQueryable();
+
+
+        if (filter.Id is not null)
+        {
+            query = query.Where(x =>
+                 x.Id != null &&
+                (x.Id).Equals(filter.Id));
+        }
+
+        if (filter.Name is not null)
+        {
+            string normalizedFilterName = filter.Name.ToLower();
+            query = query.Where(x =>
+                (x.Name).ToLower().Equals(normalizedFilterName));
+        }
+
+        var result = await query.ToListAsync();
+        var promotionDTO = result.Adapt<List<PromotionDTO>>();
+        return promotionDTO;
     }
-
-
-
-    
 
     public async Task<PromotionDTO> Update(UpdatePromotionModel model)
     {
-        var promotion = await _context.Promotion.FindAsync(model.Id);
+        var query = _context.Promotions
+                         .Include(a => a.PromotionsEnterprises)
+                         .ThenInclude(a => a.Enterprise)
+                         .AsQueryable();
 
-        if (promotion is null) throw new Exception("Promotion was not found");
+        var result = await query.ToListAsync();
+
+        var promotion = await _context.Promotions
+        .Include(p => p.PromotionsEnterprises)
+        .FirstOrDefaultAsync(p => p.Id == model.Id);
+
+        if (promotion == null)
+        {
+            throw new NotFoundException("Promotion not found");
+        }
 
         model.Adapt(promotion);
 
-        _context.Promotion.Update(promotion);
+        promotion.PromotionsEnterprises.Clear();
+
+        foreach (int enterpriseId in model.RelatedEnterpriseIds)
+        {
+            var promotionEnterprise = new PromotionEnterprise
+            {
+                PromotionId = promotion.Id,
+                EnterpriseId = enterpriseId
+            };
+            promotion.PromotionsEnterprises.Add(promotionEnterprise);
+        }
 
         await _context.SaveChangesAsync();
-
         var promotionDTO = promotion.Adapt<PromotionDTO>();
-
         return promotionDTO;
-    }
-
-    public Task<List<CurrencyDTO>> GetFiltered(FilterCurrencyModel filter)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<CurrencyDTO> Add(CreateCurrencyModel model)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<CurrencyDTO> IPromotionRepository.GetById(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<CurrencyDTO> Update(UpdateCurrencyModel model)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<List<CurrencyDTO>> IPromotionRepository.GetAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<bool> Delete(int id)
-    {
-        throw new NotImplementedException();
     }
 }

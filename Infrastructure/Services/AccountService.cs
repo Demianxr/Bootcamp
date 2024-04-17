@@ -1,50 +1,49 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
-using Core.Requests;
 using Infrastructure.Repositories;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services;
+
+public class AccountService : IAccountService
 {
-    public class AccountService : IAccountService
+    private readonly IAccountRepository _accountRepository;
+
+    public AccountService(IAccountRepository accountRepository)
     {
-        private readonly IAccountRepository _accountRepository;
+        _accountRepository = accountRepository;
+    }
 
-        public AccountService(IAccountRepository accountRepository)
+    public async Task<AccountDTO> Add(CreateAccountModel model)
+    {
+        bool customerDoesntExist = await _accountRepository.VerifyCustomerExists(model.CustomerId);
+        if (customerDoesntExist)
         {
-            _accountRepository = accountRepository;
+            throw new BusinessLogicException($"Customer {model.CustomerId} does not exist");
         }
 
-        public Task<AccountDTO> Add(CreateAccountModel model)
+        bool currencyDoesntExist = await _accountRepository.VerifyCurrencyExists(model.CurrencyId);
+        if (currencyDoesntExist)
         {
-            throw new NotImplementedException();
+            throw new BusinessLogicException($"Currency {model.CurrencyId} does not exist");
         }
+        return await _accountRepository.Add(model);
+    }
 
-        public Task<AccountDTO> Create(Core.Requests.CreateAccountRequest request)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<bool> Delete(int id)
+    {
+        return await _accountRepository.Delete(id);
+    }
 
-        public async Task<bool> Delete(int id)
-        {
-            return await _accountRepository.Delete(id);
-        }
+    public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
+    {
+        return await _accountRepository.GetFiltered(filter);
+    }
 
-        public Task<AccountDTO> GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
-        {
-            return await _accountRepository.GetFiltered(filter);
-        }
-
-        public Task<AccountDTO> Update(UpdateAccountModel model)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<AccountDTO> Update(UpdateAccountModel model)
+    {
+        return await _accountRepository.Update(model);
     }
 }
-      

@@ -1,26 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Core.Request;
 
-namespace Core.ViewModels
+public class UpdatePromotionModel
 {
-    public class UpdatePromotionModel
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+    public int Discount { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Name { get; set; }
+    public List<int> RelatedEnterpriseIds { get; set; } = new List<int>();
 
-        [Required]
-        [StringLength(255)]
-        public string Description { get; set; }
-
-        [Range(0, int.MaxValue)]
-        public int DurationTimeInMinutes { get; set; } 
-
-        [Range(0, 100)]
-        public decimal PercentageOff { get; set; }
-
-        [Required]
-        public int EnterpriseId { get; set; }
-    }
 }

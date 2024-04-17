@@ -1,33 +1,40 @@
 ﻿using Core.Constants;
-using Core.Interfaces.Repositories;
-using Core.Requests;
+using Core.Request;
 using FluentValidation;
 
-public class UpdateAccountModelValidation : AbstractValidator<UpdateAccountModel>
+namespace Infrastructure.Validations;
+
+public class UpdateAccountValidation : AbstractValidator<UpdateAccountModel>
 {
-    private readonly IAccountRepository _accountRepository;
-
-    public UpdateAccountModelValidation(IAccountRepository accountRepository)
+    public UpdateAccountValidation()
     {
-        _accountRepository = accountRepository;
+        RuleFor(x => x.Holder)
+            .NotNull().WithMessage("Holder cannot be null")
+            .NotEmpty().WithMessage("Holder cannot be empty");
 
-        RuleFor(m => m.Number)
-            .NotEmpty().WithMessage("Account number is required")
-            .MaximumLength(20).WithMessage("Account number cannot exceed 20 characters");
+        RuleFor(x => x.Number)
+            .NotNull().WithMessage("Card Number cannot be null")
+            .NotEmpty().WithMessage("Card Number cannot be empty");
 
-        RuleFor(m => m.Type)
-            .NotEmpty().WithMessage("Account type is required")
-            .Must(accountType => Enum.TryParse(typeof(AccountType), accountType, out _)).WithMessage("Invalid account type");
+        RuleFor(x => x.Balance)
+            .NotNull().WithMessage("Balance cannot be null")
+            .NotEmpty().WithMessage("Balance cannot be empty");
 
-        RuleFor(m => m.CurrencyId)
-            .GreaterThan(0).WithMessage("Currency ID is required and must be greater than 0")
-            .MustAsync(async (currencyId, cancellationToken) => await _accountRepository.CurrencyExists(currencyId))
-            .WithMessage("Invalid currency ID");
+        RuleFor(x => x.AccountStatus)
+           .Must(x => Enum.IsDefined(typeof(AccountStatus), x))
+           .WithMessage("Invalid Account Status");
 
-        RuleFor(m => m.CustomerId)
-            .GreaterThan(0).WithMessage("Customer ID is required and must be greater than 0")
-            .MustAsync(async (customerId, cancellationToken) => await _accountRepository.CustomerExists(customerId))
-            .WithMessage("Invalid customer ID");
+        RuleFor(x => x.CustomerId)
+            .NotNull().WithMessage("Customer Id cannot be null")
+            .NotEmpty().WithMessage("Customer Id cannot be empty");
+
+        RuleFor(x => x.CurrencyId)
+            .NotNull().WithMessage("Currency Id cannot be null")
+            .NotEmpty().WithMessage("Currency Id cannot be empty");
+    }
+
+    private bool BeValidAccountStatus(int arg)
+    {
+        return Enum.IsDefined(typeof(AccountStatus), arg);
     }
 }
-

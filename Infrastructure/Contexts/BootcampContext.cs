@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.EntityConfigurations;
 using Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,8 +33,10 @@ public partial class BootcampContext : DbContext
     public virtual DbSet<Movement> Movements { get; set; }
 
     public virtual DbSet<CreditCard> CreditCards { get; set; }
-    public virtual DbSet<Promotion> Promotion { get; set; }
+    public virtual DbSet<Promotion> Promotions { get; set; }
     public virtual DbSet<Enterprise> Enterprises { get; set; }
+    public virtual DbSet<PromotionEnterprise> PromotionEnterprises { get; set; }
+    public virtual DbSet<Product> Products { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +51,7 @@ public partial class BootcampContext : DbContext
         modelBuilder.ApplyConfiguration(new PromotionConfiguration());
         modelBuilder.ApplyConfiguration(new EnterpriseConfiguration());
         modelBuilder.ApplyConfiguration(new PromotionEnterpriseConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductConfiguration());
 
 
         OnModelCreatingPartial(modelBuilder);

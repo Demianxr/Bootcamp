@@ -1,71 +1,36 @@
-﻿using Core.DTOs;
-using Core.Interfaces.Repositories;
+﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.Requests;
-using Core.ViewModels;
-using Mapster;
+using Core.Request;
 
-namespace Core.Services
+namespace Infrastructure.Services;
+
+public class PromotionService : IPromotionService
 {
-    public class PromotionService : IPromotionService
+    private readonly IPromotionRepository _promotionRepository;
+
+    public PromotionService(IPromotionRepository promotionRepository)
     {
-        private readonly IPromotionRepository _promotionRepository;
+        _promotionRepository = promotionRepository;
+    }
 
-        public PromotionService(IPromotionRepository promotionRepository)
-        {
-            _promotionRepository = promotionRepository;
-        }
-        public async Task<PromotionDTO> GetById(int id)
-        {
-            var promotion = await _promotionRepository.GetById(id);
-            return promotion?.Adapt<PromotionDTO>();
-        }
+    public async Task<PromotionDTO> Add(CreatePromotionModel model)
+    {
+        return await _promotionRepository.Add(model);
+    }
 
-        public async Task<bool> DeletePromotionAsync(int id)
-        {
-            return await _promotionRepository.Delete(id);
-        }
+    public async Task<bool> Delete(int id)
+    {
+        return await _promotionRepository.Delete(id);
+    }
 
-        public async Task<PromotionDTO> UpdatePromotionAsync(UpdatePromotionModel model)
-        {
-            var promotion = await _promotionRepository.Update(model);
-            return promotion?.Adapt<PromotionDTO>();
-        }
+    public async Task<List<PromotionDTO>> GetFiltered(FilterPromotionModel filter)
+    {
+        return await _promotionRepository.GetFiltered(filter);
+    }
 
-        public Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AccountDTO> Add(CreateAccountModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AccountDTO> Update(UpdateAccountModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AccountDTO> Create(CreateAccountRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AccountDTO> IPromotionService.GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task GetAllPromotions()
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<PromotionDTO> Update(UpdatePromotionModel model)
+    {
+        return await _promotionRepository.Update(model);
     }
 }

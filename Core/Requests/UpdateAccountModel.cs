@@ -1,19 +1,18 @@
-﻿namespace Core.Requests
+﻿namespace Core.Request;
+
+public class UpdateAccountModel
 {
-    public class UpdateAccountModel
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Holder { get; set; } = string.Empty;
-        public string Type { get; set; }
-        public string Number { get; set; } = string.Empty;
+    public string Holder { get; set; } = string.Empty;
 
-        public decimal Balance { get; set; }
+    public string Number { get; set; } = string.Empty;
 
-        public string Status { get; set; } = string.Empty;
+    public Decimal Balance { get; set; }
 
-        public int CurrencyId { get; set; }
+    public string AccountStatus { get; set; } = string.Empty;
 
-        public int CustomerId { get; set; }
-    }
+    public int CurrencyId { get; set; }
+
+    public int CustomerId { get; set; }
 }

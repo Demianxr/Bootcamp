@@ -1,17 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Text.Json.Serialization;
 
-namespace Core.ViewModels
+namespace Core.Request;
+
+public class CreatePromotionModel
 {
-    public class CreatePromotionModel
-    {
-        public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+    public int Discount { get; set; }
 
-        public DateTime? Start {  get; set; }
-
-        public DateTime? End { get; set; }
-
-        public int discount { get; set; }
-
-        public List<int> RelatedEnterpiseIds { get; set; } = new List<int>();
-    }
+    public List<int> RelatedEnterpriseIds { get; set; } = new List<int>();
 }

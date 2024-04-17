@@ -2,35 +2,30 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
 {
-    public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
+    public void Configure(EntityTypeBuilder<Promotion> entity)
     {
-        public void Configure(EntityTypeBuilder<Promotion> entity)
-        {
-            entity.ToTable("Promotions");
 
-            entity
-                .HasKey(e => e.Id)
-                .HasName("Promotion_pkey");
+        entity.HasKey(p => p.Id);
 
-            entity
-                .Property(e => e.Start)
-                .IsRequired();
+        entity
+            .Property(p => p.Start)
+            .IsRequired();
 
-            entity
-                .Property(e => e.End)
-                .IsRequired();
+        entity
+            .Property(p => p.End)
+            .IsRequired();
 
-            entity
-                .Property(e => e.Discount)
-                .IsRequired();
+        entity
+            .Property(p => p.Discount)
+            .IsRequired();
 
-           
-            entity
-                .HasMany(e => e.PromotionsEnterprises)
-                .WithOne(pe => pe.Promotion)
-                .HasForeignKey(pe => pe.PromotionId);
-        }
+        entity
+            .HasMany(p => p.PromotionsEnterprises)
+            .WithOne(pe => pe.Promotion)
+            .HasForeignKey(pe => pe.PromotionId);
     }
 }

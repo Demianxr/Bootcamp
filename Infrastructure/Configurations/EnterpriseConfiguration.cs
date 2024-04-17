@@ -2,30 +2,35 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class EnterpriseConfiguration : IEntityTypeConfiguration<Enterprise>
 {
-    public class EnterpriseConfiguration : IEntityTypeConfiguration<Enterprise>
+    public void Configure(EntityTypeBuilder<Enterprise> entity)
     {
-        public void Configure(EntityTypeBuilder<Enterprise> builder)
-        {
-            builder.HasKey(e => e.Id);
+        entity.HasKey(e => e.Id);
 
-            builder.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(50);
+        entity
+            .Property(e => e.Name)
+            .IsRequired();
 
-            builder.Property(e => e.Address)
-                .HasMaxLength(255);
+        entity
+            .Property(e => e.Address)
+            .IsRequired();
 
-            builder.Property(e => e.Phone)
-                .HasMaxLength(50);
+        entity
+            .Property(e => e.Phone)
+            .IsRequired();
 
-            builder.Property(e => e.Email)
-                .HasMaxLength(100);
+        entity
+            .Property(e => e.Email)
+            .IsRequired();
 
-            builder.HasMany(e => e.PromotionsEnterprises)
-                .WithOne(p => p.Enterprise)
-                .HasForeignKey(p => p.EnterpriseId);
-        }
+        entity
+            .HasMany(e => e.PromotionsEnterprises)
+            .WithOne(pe => pe.Enterprise)
+            .HasForeignKey(pe => pe.EnterpriseId);
+
+
     }
 }
