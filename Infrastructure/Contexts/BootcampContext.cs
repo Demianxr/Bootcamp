@@ -37,6 +37,9 @@ public partial class BootcampContext : DbContext
     public virtual DbSet<Enterprise> Enterprises { get; set; }
     public virtual DbSet<PromotionEnterprise> PromotionEnterprises { get; set; }
     public virtual DbSet<Product> Products { get; set; }
+    public virtual DbSet<Transaction> Transactions { get; set; }
+    public virtual DbSet<UserRequest> UserRequests { get; set; }
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +55,8 @@ public partial class BootcampContext : DbContext
         modelBuilder.ApplyConfiguration(new EnterpriseConfiguration());
         modelBuilder.ApplyConfiguration(new PromotionEnterpriseConfiguration());
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
+        modelBuilder.ApplyConfiguration(new TransactionConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRequestConfiguration());
 
 
         OnModelCreatingPartial(modelBuilder);

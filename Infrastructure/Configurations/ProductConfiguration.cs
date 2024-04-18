@@ -8,20 +8,18 @@ namespace Core.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.HasKey(p => p.Id); // Set primary key
+            builder.ToTable("Products");
 
-     //       builder.Property(p => p.Name)
-     //           .IsRequired() // Set name as required
-//                .HasMaxLength(ProductConstants.MaxProductNameLength); // Set maximum length from Constants
+            builder.HasKey(p => p.Id);
 
-   //         builder.Property(p => p.Description)
-  //              .HasMaxLength(ProductConstants.MaxProductDescriptionLength); // Set maximum length from Constants
-
-            builder.Property(p => p.ProductType)
-                .IsRequired(); // Set ProductType as required
-
-            builder.Property(p => p.Status)
-                .IsRequired(); // Set Status as required
+            builder.Property(p => p.Name).IsRequired().HasMaxLength(50);
+            builder.Property(p => p.Amount).IsRequired();
+            builder.Property(p => p.Term).IsRequired();
+            builder.Property(p => p.Brand).HasMaxLength(50);
+            builder.Property(p => p.InitialDeposit).IsRequired();
+            builder.Property(p => p.Currency).IsRequired().HasMaxLength(3);
+            builder.Property(p => p.RequestDate).IsRequired();
+            builder.Property(p => p.ApprovalDate);
         }
     }
 }

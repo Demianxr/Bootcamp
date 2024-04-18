@@ -6,10 +6,13 @@ namespace Core.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public ProductType ProductType { get; set; }
-        public ProductStatus Status { get; set; }
+        public decimal Amount { get; set; }
+        public int Term { get; set; } // En meses para créditos
+        public string Brand { get; set; } // Para tarjetas de crédito
+        public decimal InitialDeposit { get; set; } // Para cuentas corrientes
+        public string Currency { get; set; }
+        public DateTime RequestDate { get; set; }
+        public DateTime? ApprovalDate { get; set; }
     }
-
 
 }

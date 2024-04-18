@@ -1,13 +1,14 @@
 ﻿using Core.Entities;
+using Core.Requests;
 
 namespace Core.Interfaces.Repositories
 {
     public interface IProductRepository
     {
-        void AddProduct(Product product);
-        Product GetProductById(int productId);
+        Product GetProductById(int id);
         IEnumerable<Product> GetAllProducts();
+        void AddProduct(Product product);
         void UpdateProduct(Product product);
-        void DeleteProduct(int productId);
+        void DeleteProduct(int id);
     }
 }
