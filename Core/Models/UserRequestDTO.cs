@@ -2,12 +2,19 @@
 {
     public class UserRequestDTO
     {
-        public int Id { get; set; }
+      
         public string ProductType { get; set; }
         public decimal Amount { get; set; }
         public string Currency { get; set; }
-        public DateTime RequestDate { get; set; }
-        public DateTime ApprovalDate { get; set; }
+
+        
+        public UserRequestDTO(string productType, decimal amount, string currency)
+        {
+            this.ProductType = productType;
+            this.Amount = amount;
+            this.Currency = currency;
+        }
     }
+
 }
 

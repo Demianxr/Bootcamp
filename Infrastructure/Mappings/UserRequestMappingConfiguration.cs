@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class UserRequestConfiguration : IEntityTypeConfiguration<UserRequest>
+public class UserRequestMappingConfiguration : IEntityTypeConfiguration<UserRequest>
 {
     public void Configure(EntityTypeBuilder<UserRequest> builder)
     {
-        // Configuración del Id como clave primaria
+
         builder.HasKey(ur => ur.Id);
 
-        // Configuración de las propiedades
+
         builder.Property(ur => ur.ProductType)
             .IsRequired()
             .HasMaxLength(50);

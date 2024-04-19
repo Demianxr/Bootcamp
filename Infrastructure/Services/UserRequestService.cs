@@ -5,34 +5,56 @@ using Core.Requests;
 
 public class UserRequestService : IUserRequestService
 {
-    private readonly IUserRequestRepository _userRequestRepository;
+    private readonly IUserRequestRepository _repository;
 
-    public UserRequestService(IUserRequestRepository userRequestRepository)
+    public UserRequestService(IUserRequestRepository repository)
     {
-        _userRequestRepository = userRequestRepository;
+        _repository = repository;
     }
 
-    public async Task<UserRequest> CreateUserRequestAsync(CreateUserRequestModel requestModel)
+    public async Task<UserRequest> GetUserRequestByIdAsync(int id)
     {
-        
+        return await _repository.GetByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<UserRequest>> GetAllUserRequestsAsync()
+    {
+        return await _repository.GetAllAsync();
+    }
+
+    public async Task<UserRequest> AddUserRequestAsync(CreateUserRequestModel model)
+    {
         var userRequest = new UserRequest
         {
-            ProductType = requestModel.ProductType,
-            Amount = requestModel.Amount,
-            Currency = requestModel.Currency,
-            RequestDate = DateTime.Now,
-            ApprovalDate = DateTime.MinValue // Se establecerá más tarde cuando se apruebe la solicitud
+            ProductType = model.ProductType,
+            Amount = model.Amount,
+            Currency = model.Currency,
+            RequestDate = DateTime.Now
         };
 
-        return await _userRequestRepository.CreateAsync(userRequest);
+        return await _repository.AddAsync(userRequest);
     }
 
-    public async Task<UserRequest> GetRequestByIdAsync(int id)
+    public async Task<UserRequest> UpdateUserRequestAsync(UpdateUserRequestModel model)
     {
-        return await _userRequestRepository.GetByIdAsync(id);
+        var userRequest = await _repository.GetByIdAsync(model.Id);
+        if (userRequest != null)
+        {
+            userRequest.ProductType = model.ProductType;
+            userRequest.Amount = model.Amount;
+            userRequest.Currency = model.Currency;
+
+            return await _repository.UpdateAsync(userRequest);
+        }
+
+        return null;
     }
 
-    // Implementa otros métodos de IUserRequestService según sea necesario
+    public async Task DeleteUserRequestAsync(int id)
+    {
+        await _repository.DeleteAsync(id);
+    }
 }
+
 
 

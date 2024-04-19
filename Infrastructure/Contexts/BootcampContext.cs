@@ -39,6 +39,8 @@ public partial class BootcampContext : DbContext
     public virtual DbSet<Product> Products { get; set; }
     public virtual DbSet<Transaction> Transactions { get; set; }
     public virtual DbSet<UserRequest> UserRequests { get; set; }
+    public virtual DbSet<Withdrawal> Withdrawals { get; set; }
+    public virtual DbSet<ServicePayment> ServicePayments { get; set; }
 
 
 
@@ -57,6 +59,8 @@ public partial class BootcampContext : DbContext
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());
         modelBuilder.ApplyConfiguration(new UserRequestConfiguration());
+        modelBuilder.ApplyConfiguration(new WithdrawalConfiguration());
+        modelBuilder.ApplyConfiguration(new ServicePaymentConfiguration());
 
 
         OnModelCreatingPartial(modelBuilder);
