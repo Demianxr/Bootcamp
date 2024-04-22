@@ -69,7 +69,10 @@ public class AccountRepository : IAccountRepository
     {
         var account = await _context.Accounts.FindAsync(id);
 
-        if (account is null) throw new Exception("Account not found");
+        if (account is null)
+        {
+            throw new NotFoundException($"The account with id: {id} does not exist"); 
+        }
 
         _context.Accounts.Remove(account);
 

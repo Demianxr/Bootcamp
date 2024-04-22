@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions; 
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Requests;
@@ -26,6 +27,8 @@ namespace Infrastructure.Services
 
         public async Task<ServicePayment> AddServicePaymentAsync(CreateServicePaymentModel model)
         {
+            
+
             var servicePayment = new ServicePayment
             {
                 DocumentNumber = model.DocumentNumber,
@@ -41,17 +44,17 @@ namespace Infrastructure.Services
         public async Task<ServicePayment> UpdateServicePaymentAsync(UpdateServicePaymentModel model)
         {
             var servicePayment = await _repository.GetByIdAsync(model.Id);
-            if (servicePayment != null)
+            if (servicePayment == null)
             {
-                servicePayment.DocumentNumber = model.DocumentNumber;
-                servicePayment.Amount = model.Amount;
-                servicePayment.Description = model.Description;
-                servicePayment.DebitAccountId = model.DebitAccountId;
-
-                return await _repository.UpdateAsync(servicePayment);
+                throw new NotFoundException($"Service payment with ID {model.Id} not found"); 
             }
 
-            return null;
+            servicePayment.DocumentNumber = model.DocumentNumber;
+            servicePayment.Amount = model.Amount;
+            servicePayment.Description = model.Description;
+            servicePayment.DebitAccountId = model.DebitAccountId;
+
+            return await _repository.UpdateAsync(servicePayment);
         }
 
         public async Task DeleteServicePaymentAsync(int id)

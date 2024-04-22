@@ -49,6 +49,10 @@ public static class DependencyInjection
         services.AddScoped<IPromotionRepository, PromotionRepository>();
         services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
         services.AddScoped<IUserRequestRepository, UserRequestRepository>();
+        services.AddScoped<IServicePaymentRepository, ServicePaymentRepository>();
+        services.AddScoped<IDepositRepository, DepositRepository>();
+        services.AddScoped<IServicePaymentRepository, ServicePaymentRepository>();
+        services.AddScoped<IWithdrawalRepository, WithdrawalRepository>();
 
         
 
@@ -66,6 +70,9 @@ public static class DependencyInjection
         services.AddScoped<IPromotionService, PromotionService>();
         services.AddScoped<IEnterpriseService, EnterpriseService>();
         services.AddScoped<IUserRequestService, UserRequestService>();
+        services.AddScoped<IDepositService, DepositService>();
+        services.AddScoped<IServicePaymentService, ServicePaymentService>();
+        services.AddScoped<IWithdrawalService, WithdrawalService>();
         
         
 

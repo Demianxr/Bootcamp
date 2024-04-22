@@ -3,7 +3,6 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
-using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
 
@@ -21,14 +20,15 @@ public class AccountService : IAccountService
         bool customerDoesntExist = await _accountRepository.VerifyCustomerExists(model.CustomerId);
         if (customerDoesntExist)
         {
-            throw new BusinessLogicException($"Customer {model.CustomerId} does not exist");
+            throw new CustomerNotFoundException(model.CustomerId);
         }
 
         bool currencyDoesntExist = await _accountRepository.VerifyCurrencyExists(model.CurrencyId);
         if (currencyDoesntExist)
         {
-            throw new BusinessLogicException($"Currency {model.CurrencyId} does not exist");
+            throw new CurrencyNotFoundException(model.CurrencyId);
         }
+
         return await _accountRepository.Add(model);
     }
 
@@ -45,5 +45,18 @@ public class AccountService : IAccountService
     public async Task<AccountDTO> Update(UpdateAccountModel model)
     {
         return await _accountRepository.Update(model);
+    }
+}
+public class CustomerNotFoundException : BusinessLogicException
+{
+    public CustomerNotFoundException(int customerId) : base($"Customer {customerId} does not exist")
+    {
+    }
+}
+
+public class CurrencyNotFoundException : BusinessLogicException
+{
+    public CurrencyNotFoundException(int currencyId) : base($"Currency {currencyId} does not exist")
+    {
     }
 }

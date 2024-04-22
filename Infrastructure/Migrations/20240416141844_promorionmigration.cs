@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-#nullable disable
+
 
 namespace Infrastructure.Migrations
 {
-    /// <inheritdoc />
+    
     public partial class promorionmigration : Migration
     {
-        /// <inheritdoc />
+        
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -73,7 +73,6 @@ namespace Infrastructure.Migrations
                 column: "EnterpriseId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

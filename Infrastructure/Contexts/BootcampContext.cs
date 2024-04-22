@@ -7,7 +7,6 @@ namespace Infrastructure.Contexts;
 
 public partial class BootcampContext : DbContext
 {
-    internal readonly object Customer;
 
     public BootcampContext()
     {
@@ -19,28 +18,21 @@ public partial class BootcampContext : DbContext
     }
 
     public virtual DbSet<Bank> Banks { get; set; }
-
     public virtual DbSet<SavingAccount> SavingAccounts { get; set; }
-
     public virtual DbSet<Customer> Customers { get; set; }
-
     public virtual DbSet<Currency> Currency { get; set; }
-
     public virtual DbSet<Account> Accounts { get; set; }
-
     public virtual DbSet<CurrentAccount> CurrentAccounts { get; set; }
-
     public virtual DbSet<Movement> Movements { get; set; }
-
     public virtual DbSet<CreditCard> CreditCards { get; set; }
     public virtual DbSet<Promotion> Promotions { get; set; }
     public virtual DbSet<Enterprise> Enterprises { get; set; }
     public virtual DbSet<PromotionEnterprise> PromotionEnterprises { get; set; }
     public virtual DbSet<Product> Products { get; set; }
-    public virtual DbSet<Transaction> Transactions { get; set; }
     public virtual DbSet<UserRequest> UserRequests { get; set; }
     public virtual DbSet<Withdrawal> Withdrawals { get; set; }
     public virtual DbSet<ServicePayment> ServicePayments { get; set; }
+    public virtual DbSet<Deposit> Deposits { get; set; }
 
 
 
@@ -57,10 +49,10 @@ public partial class BootcampContext : DbContext
         modelBuilder.ApplyConfiguration(new EnterpriseConfiguration());
         modelBuilder.ApplyConfiguration(new PromotionEnterpriseConfiguration());
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
-        modelBuilder.ApplyConfiguration(new TransactionConfiguration());
         modelBuilder.ApplyConfiguration(new UserRequestConfiguration());
         modelBuilder.ApplyConfiguration(new WithdrawalConfiguration());
         modelBuilder.ApplyConfiguration(new ServicePaymentConfiguration());
+        modelBuilder.ApplyConfiguration(new DepositConfiguration());
 
 
         OnModelCreatingPartial(modelBuilder);
