@@ -1,10 +1,13 @@
-﻿namespace Core.Requests
+﻿public class CreateWithdrawalModel
 {
-    public class CreateWithdrawalModel
+    public int AccountId { get; set; }
+    public int BankId { get; set; }
+    public decimal Amount { get; set; }
+
+    public CreateWithdrawalModel(int accountId, int bankId, decimal amount)
     {
-        public int AccountId { get; set; }
-        public int BankId { get; set; }
-        public decimal Amount { get; set; }
+        AccountId = accountId;
+        BankId = bankId;
+        Amount = amount;
     }
 }
-

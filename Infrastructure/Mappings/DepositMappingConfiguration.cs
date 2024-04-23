@@ -1,20 +1,26 @@
-﻿using Core.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class DepositMappingConfiguration : IEntityTypeConfiguration<Deposit>
+namespace BankAPI
 {
-    public void Configure(EntityTypeBuilder<Deposit> builder)
+    public class DepositMappingConfiguration : IEntityTypeConfiguration<Deposit>
     {
-        builder.ToTable("Deposits");
+        public void Configure(EntityTypeBuilder<Deposit> builder)
+        {
+            builder.HasKey(d => d.AccountId);
 
-        builder.HasKey(d => new { d.AccountId, d.BankId });
+            builder.Property(d => d.AccountId)
+                .IsRequired();
 
-        builder.Property(d => d.Amount)
-            .IsRequired();
+            builder.Property(d => d.BankId)
+                .IsRequired();
 
-        builder.Property(d => d.TransactionDate)
-            .IsRequired();
+            builder.Property(d => d.Amount)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(d => d.TransactionDate)
+                .IsRequired();
+        }
     }
 }
-

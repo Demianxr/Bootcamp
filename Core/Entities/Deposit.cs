@@ -1,36 +1,47 @@
-﻿namespace Core.Entities
-{
-    public class Deposit
+﻿ public class Deposit
     {
-        public int AccountId { get; set; }
-        public int BankId { get; set; }
+        public string AccountId { get; set; }
+        public string BankId { get; set; }
         public decimal Amount { get; set; }
         public DateTime TransactionDate { get; set; }
 
-        public Deposit(int accountId, int bankId, decimal amount)
+        public Deposit(string accountId, string bankId, decimal amount)
         {
+            if (string.IsNullOrEmpty(accountId) || string.IsNullOrEmpty(bankId) || amount <= 0)
+            {
+                throw new ArgumentException("Invalid arguments");
+            }
+
             AccountId = accountId;
             BankId = bankId;
             Amount = amount;
             TransactionDate = DateTime.Now;
         }
 
+        
         public bool ValidateAmount(decimal operationalLimit)
         {
             if (Amount > operationalLimit)
             {
-                Console.WriteLine("El monto sobrepasa el límite operacional.");
                 return false;
             }
             return true;
         }
 
-        public void UpdateBalance(ref decimal balance)
+
+        public void UpdateBalance(Account account)
         {
-            balance += Amount;
-            Console.WriteLine($"El saldo se ha actualizado correctamente. Nuevo saldo: {balance}");
+            if (account == null)
+            {
+                throw new ArgumentNullException(nameof(account));
+            }
+
+            if (account.Balance + Amount > 100000)
+            {
+                throw new InvalidOperationException("Operational limit exceeded");
+            }
+
+            account.Balance += Amount;
         }
     }
-}
 
-  

@@ -1,10 +1,8 @@
-﻿using Core.Entities;
-using Core.Interfaces.Repositories;
-using Core.Requests;
+﻿using Core.Interfaces.Repositories;
 using Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace BankAPI.Repositories
 {
     public class DepositRepository : IDepositRepository
     {
@@ -15,46 +13,15 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Deposit?> GetDepositAsync(int accountId, int bankId)
+        public async Task<Deposit> GetDepositAsync(string accountId)
         {
-            return await _context.Deposits.FindAsync(accountId, bankId);
+            return await _context.Deposits.FindAsync(accountId);
         }
 
-        public async Task<IEnumerable<Deposit>> GetDepositsAsync(FilterDepositModel filter)
+        public async Task<IEnumerable<Deposit>> GetDepositsAsync(FilterDepositModel filterModel)
         {
-            var query = _context.Deposits.AsQueryable();
-
-            if (filter.AccountId.HasValue)
-            {
-                query = query.Where(d => d.AccountId == filter.AccountId.Value);
-            }
-
-            if (filter.BankId.HasValue)
-            {
-                query = query.Where(d => d.BankId == filter.BankId.Value);
-            }
-
-            if (filter.MinAmount.HasValue)
-            {
-                query = query.Where(d => d.Amount >= filter.MinAmount.Value);
-            }
-
-            if (filter.MaxAmount.HasValue)
-            {
-                query = query.Where(d => d.Amount <= filter.MaxAmount.Value);
-            }
-
-            if (filter.StartDate.HasValue)
-            {
-                query = query.Where(d => d.TransactionDate >= filter.StartDate.Value);
-            }
-
-            if (filter.EndDate.HasValue)
-            {
-                query = query.Where(d => d.TransactionDate <= filter.EndDate.Value);
-            }
-
-            return await query.ToListAsync();
+            // Aquí puedes agregar la lógica para filtrar los depósitos según el modelo de filtro
+            return await _context.Deposits.ToListAsync();
         }
 
         public async Task<Deposit> CreateDepositAsync(CreateDepositModel createModel)
@@ -65,36 +32,29 @@ namespace Infrastructure.Repositories
             return deposit;
         }
 
-        public async Task<Deposit?> UpdateDepositAsync(int accountId, int bankId, UpdateDepositModel updateModel)
+        public async Task<Deposit> UpdateDepositAsync(string accountId, UpdateDepositModel updateModel)
         {
-            var deposit = await _context.Deposits.FindAsync(accountId, bankId);
-
+            var deposit = await _context.Deposits.FindAsync(accountId);
             if (deposit == null)
             {
-                return null;
+                throw new KeyNotFoundException("Deposit not found");
             }
 
-            if (updateModel.Amount.HasValue)
-            {
-                deposit.Amount = updateModel.Amount.Value;
-            }
-
+            deposit.Amount = updateModel.Amount;
             await _context.SaveChangesAsync();
             return deposit;
         }
 
-        public async Task<bool> DeleteDepositAsync(int accountId, int bankId)
+        public async Task DeleteDepositAsync(string accountId)
         {
-            var deposit = await _context.Deposits.FindAsync(accountId, bankId);
-
+            var deposit = await _context.Deposits.FindAsync(accountId);
             if (deposit == null)
             {
-                return false;
+                throw new KeyNotFoundException("Deposit not found");
             }
 
             _context.Deposits.Remove(deposit);
             await _context.SaveChangesAsync();
-            return true;
         }
     }
 }

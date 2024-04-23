@@ -1,13 +1,8 @@
-﻿using Core.Entities;
-using Core.Models;
-
-public interface IWithdrawalService
+﻿public interface IWithdrawalService
 {
-    Task<Withdrawal> GetWithdrawalByIdAsync(int id);
-    Task<IEnumerable<Withdrawal>> GetWithdrawalsByAccountIdAsync(int accountId);
-    Task AddWithdrawalAsync(WithdrawalDTO withdrawal);
-    Task UpdateWithdrawalAsync(WithdrawalDTO withdrawal);
+    Task<Withdrawal> CreateWithdrawalAsync(CreateWithdrawalModel model);
+    Task<Withdrawal> UpdateWithdrawalAsync(int id, UpdateWithdrawalModel model);
     Task DeleteWithdrawalAsync(int id);
+    Task<Withdrawal> GetWithdrawalAsync(int id);
+    Task<IEnumerable<Withdrawal>> FilterWithdrawalsAsync(FilterWithdrawalModel filterModel);
 }
-
-

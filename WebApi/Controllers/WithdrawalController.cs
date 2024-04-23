@@ -1,59 +1,51 @@
-﻿using Core.Models;
-using Core.Requests;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers
+[ApiController]
+[Route("[controller]")]
+public class WithdrawalController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class WithdrawalController : ControllerBase
+    private readonly IWithdrawalService _withdrawalService;
+
+    public WithdrawalController(IWithdrawalService withdrawalService)
     {
-        private readonly IWithdrawalService _withdrawalService;
+        _withdrawalService = withdrawalService;
+    }
 
-        public WithdrawalController(IWithdrawalService withdrawalService)
-        {
-            _withdrawalService = withdrawalService;
-        }
+    [HttpPost]
+    public async Task<IActionResult> CreateWithdrawal([FromBody] CreateWithdrawalModel model)
+    {
+        var withdrawal = await _withdrawalService.CreateWithdrawalAsync(model);
+        return CreatedAtAction(nameof(GetWithdrawal), new { id = withdrawal.AccountId }, withdrawal);
+    }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetWithdrawalById(int id)
-        {
-            var withdrawal = await _withdrawalService.GetWithdrawalByIdAsync(id);
-            if (withdrawal == null)
-            {
-                return NotFound();
-            }
-            return Ok(withdrawal);
-        }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateWithdrawal(int id, [FromBody] UpdateWithdrawalModel model)
+    {
+        await _withdrawalService.UpdateWithdrawalAsync(id, model);
+        return NoContent();
+    }
 
-        [HttpGet("account/{accountId}")]
-        public async Task<IActionResult> GetWithdrawalsByAccountId(int accountId)
-        {
-            var withdrawals = await _withdrawalService.GetWithdrawalsByAccountIdAsync(accountId);
-            return Ok(withdrawals);
-        }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteWithdrawal(int id)
+    {
+        await _withdrawalService.DeleteWithdrawalAsync(id);
+        return NoContent();
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> AddWithdrawal([FromBody] CreateWithdrawalModel model)
-        {
-            var withdrawal = new WithdrawalDTO(model.AccountId, model.BankId, model.Amount);
-            await _withdrawalService.AddWithdrawalAsync(withdrawal);
-            return CreatedAtAction(nameof(GetWithdrawalById), new { id = withdrawal.Id }, withdrawal);
-        }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetWithdrawal(int id)
+    {
+        var withdrawal = await _withdrawalService.GetWithdrawalAsync(id);
+        if (withdrawal == null)
+            return NotFound();
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateWithdrawal(int id, [FromBody] UpdateWithdrawalModel model)
-        {
-            var withdrawal = new WithdrawalDTO(model.AccountId, model.BankId, model.Amount) { Id = id };
-            await _withdrawalService.UpdateWithdrawalAsync(withdrawal);
-            return NoContent();
-        }
+        return Ok(withdrawal);
+    }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteWithdrawal(int id)
-        {
-            await _withdrawalService.DeleteWithdrawalAsync(id);
-            return NoContent();
-        }
+    [HttpGet]
+    public async Task<IActionResult> FilterWithdrawals([FromQuery] FilterWithdrawalModel filterModel)
+    {
+        var withdrawals = await _withdrawalService.FilterWithdrawalsAsync(filterModel);
+        return Ok(withdrawals);
     }
 }

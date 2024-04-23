@@ -3,16 +3,19 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
+using MapsterMapper;
 
 namespace Infrastructure.Services;
 
 public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly IMapper _mapper;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(IAccountRepository accountRepository, IMapper mapper)
     {
         _accountRepository = accountRepository;
+        _mapper = mapper;
     }
 
     public async Task<AccountDTO> Add(CreateAccountModel model)
@@ -59,4 +62,8 @@ public class CurrencyNotFoundException : BusinessLogicException
     public CurrencyNotFoundException(int currencyId) : base($"Currency {currencyId} does not exist")
     {
     }
+
+
+
 }
+

@@ -54,13 +54,8 @@ namespace Infrastructure.Migrations
                 table: "Accounts",
                 newName: "Status");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "Type",
-                table: "Accounts",
-                type: "integer",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"Type\" TYPE integer USING \"Type\"::integer;");
+
         }
     }
 }

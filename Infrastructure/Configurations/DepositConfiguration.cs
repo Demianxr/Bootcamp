@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using BankAPI;
+using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,10 +9,17 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Deposit> builder)
         {
-            builder.HasKey(d => new { d.AccountId, d.BankId });
+            builder.HasKey(d => d.AccountId);
+
+            builder.Property(d => d.AccountId)
+                .IsRequired();
+
+            builder.Property(d => d.BankId)
+                .IsRequired();
 
             builder.Property(d => d.Amount)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(d => d.TransactionDate)
                 .IsRequired();

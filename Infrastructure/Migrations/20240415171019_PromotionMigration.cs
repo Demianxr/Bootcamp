@@ -19,13 +19,8 @@ namespace Infrastructure.Migrations
                 table: "Accounts",
                 newName: "Status");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "Type",
-                table: "Accounts",
-                type: "integer",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "text");
+            migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"Type\" TYPE integer USING \"Type\"::integer;");
+
         }
 
         /// <inheritdoc />
@@ -36,13 +31,8 @@ namespace Infrastructure.Migrations
                 table: "Accounts",
                 newName: "AccountType");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Type",
-                table: "Accounts",
-                type: "text",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "integer");
+            migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"Type\" TYPE integer USING \"Type\"::integer;");
+
 
             migrationBuilder.AddColumn<int>(
                 name: "AccountStatus",

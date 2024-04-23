@@ -1,14 +1,11 @@
-﻿using Core.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 public class WithdrawalMappingConfiguration : IEntityTypeConfiguration<Withdrawal>
 {
     public void Configure(EntityTypeBuilder<Withdrawal> builder)
     {
-        builder.ToTable("Withdrawals");
-
-        builder.HasKey(w => w.Id);
+        builder.HasKey(w => w.AccountId);
 
         builder.Property(w => w.AccountId)
             .IsRequired();
@@ -20,8 +17,8 @@ public class WithdrawalMappingConfiguration : IEntityTypeConfiguration<Withdrawa
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
-        builder.Property(w => w.OperationDate)
-            .IsRequired();
+        builder.Property(w => w.TransactionDate)
+            .IsRequired()
+            .HasColumnType("timestamp with time zone");
     }
 }
-

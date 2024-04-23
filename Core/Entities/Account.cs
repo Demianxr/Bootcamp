@@ -6,6 +6,7 @@ public class Account
     public int Id { get; set; }
     public string Holder { get; set; }
     public string Number { get; set; }
+    public decimal OperationalLimit { get; set; } = 100000m;
     public AccountType AccountType { get; set; } = AccountType.Current;
     public decimal Balance { get; set; }
     public AccountStatus AccountStatus { get; set; } = AccountStatus.Active;
@@ -17,10 +18,11 @@ public class Account
     public SavingAccount? SavingAccount { get; set; }
     public CurrentAccount? CurrentAccount { get; set; }
     public virtual ICollection<Movement> Movements { get; set; } = new List<Movement>();
+    public virtual ICollection<Withdrawal> Withdrawals { get; set; } = new List<Withdrawal>();
 
     public Account()
     {
-        OpeningDate = DateTime.UtcNow;
+        OpeningDate = DateTime.Now;
     }
 
     public Account(string holder, string number, AccountType accountType, int currencyId, int customerId)
@@ -32,7 +34,7 @@ public class Account
         AccountType = accountType;
         CurrencyId = currencyId;
         CustomerId = customerId;
-        OpeningDate = DateTime.UtcNow;
+        OpeningDate = DateTime.Now;
     }
 
     public void SetCustomer(Customer customer)

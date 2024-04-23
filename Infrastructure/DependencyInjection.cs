@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using BankAPI.Repositories;
+using BankAPI.Services;
 
 namespace Infrastructure;
 

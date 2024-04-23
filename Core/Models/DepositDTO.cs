@@ -1,20 +1,21 @@
-﻿using Core.Entities;
-
-namespace Core.Models
+﻿public class DepositDTO
 {
-    public class DepositDTO
-    {
-        public int AccountId { get; set; }
-        public int BankId { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime TransactionDate { get; set; }
+    public string AccountId { get; set; }
+    public string BankId { get; set; }
+    public decimal Amount { get; set; }
+    public DateTime TransactionDate { get; set; }
 
-        public DepositDTO(Deposit deposit)
+    public DepositDTO(string accountId, string bankId, decimal amount)
+    {
+        if (string.IsNullOrEmpty(accountId) || string.IsNullOrEmpty(bankId) || amount <= 0)
         {
-            AccountId = deposit.AccountId;
-            BankId = deposit.BankId;
-            Amount = deposit.Amount;
-            TransactionDate = deposit.TransactionDate;
+            throw new ArgumentException("Invalid arguments");
         }
+
+        AccountId = accountId;
+        BankId = bankId;
+        Amount = amount;
+        TransactionDate = DateTime.Now;
     }
 }
+

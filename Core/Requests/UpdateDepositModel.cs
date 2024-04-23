@@ -1,24 +1,16 @@
-﻿namespace Core.Requests
-{
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+
     public class UpdateDepositModel
     {
-        public decimal? Amount { get; set; }
+        [Required]
+        public string AccountId { get; set; }
 
-        public bool IsValid(decimal operationalLimit)
-        {
-            if (Amount.HasValue && Amount <= 0)
-            {
-                Console.WriteLine("El monto debe ser mayor que cero.");
-                return false;
-            }
+        [Required]
+        public string BankId { get; set; }
 
-            if (Amount.HasValue && Amount > operationalLimit)
-            {
-                Console.WriteLine("El monto sobrepasa el límite operacional.");
-                return false;
-            }
-
-            return true;
-        }
+        [Required]
+        [Range(0.01, 100000)] // Límite operacional
+        public decimal Amount { get; set; }
     }
-}
+

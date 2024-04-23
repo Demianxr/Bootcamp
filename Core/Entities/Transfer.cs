@@ -17,7 +17,7 @@ namespace Core.Entities
             OriginAccountId = originAccountId;
             DestinationAccountId = destinationAccountId;
             Amount = amount;
-            TransferDate = DateTime.UtcNow;
+            TransferDate = DateTime.Now;
         }
 
         public bool ValidateTransfer()
@@ -43,9 +43,7 @@ namespace Core.Entities
                 throw new Exception("La cuenta de origen debe estar activa.");
             }
 
-            // Verificar si la operación sobrepasa el límite operacional
-            // ...
-
+            
             return true;
         }
 

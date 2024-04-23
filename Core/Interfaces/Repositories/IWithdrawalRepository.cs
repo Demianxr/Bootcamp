@@ -1,13 +1,8 @@
-﻿using Core.Entities;
-
-namespace Core.Interfaces.Repositories
+﻿public interface IWithdrawalRepository
 {
-    public interface IWithdrawalRepository
-    {
-        Task<Withdrawal> GetWithdrawalByIdAsync(int id);
-        Task<IEnumerable<Withdrawal>> GetWithdrawalsByAccountIdAsync(int accountId);
-        Task AddWithdrawalAsync(Withdrawal withdrawal);
-        Task UpdateWithdrawalAsync(Withdrawal withdrawal);
-        Task DeleteWithdrawalAsync(int id);
-    }
+    Task<Withdrawal> CreateAsync(Withdrawal withdrawal);
+    Task<Withdrawal> UpdateAsync(Withdrawal withdrawal);
+    Task DeleteAsync(int id);
+    Task<Withdrawal> GetByIdAsync(int id);
+    Task<IEnumerable<Withdrawal>> FilterAsync(FilterWithdrawalModel filterModel);
 }

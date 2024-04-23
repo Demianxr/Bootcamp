@@ -1,76 +1,70 @@
 ﻿using Core.Interfaces.Services;
-using Core.Models;
-using Core.Requests;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("[controller]")]
-public class DepositController : ControllerBase
+namespace BankAPI.Controllers
 {
-    private readonly IDepositService _service;
-
-    public DepositController(IDepositService service)
+    [ApiController]
+    [Route("[controller]")]
+    public class DepositController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly IDepositService _service;
 
-    [HttpGet("{accountId}/{bankId}")]
-    public async Task<ActionResult<DepositDTO>> GetDeposit(int accountId, int bankId)
-    {
-        var deposit = await _service.GetDepositAsync(accountId, bankId);
-
-        if (deposit == null)
+        public DepositController(IDepositService service)
         {
-            return NotFound();
+            _service = service;
         }
 
-        return deposit;
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<DepositDTO>>> GetDeposits([FromQuery] FilterDepositModel filter)
-    {
-        var deposits = await _service.GetDepositsAsync(filter);
-        return Ok(deposits);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<DepositDTO>> CreateDeposit(CreateDepositModel createModel)
-    {
-        var deposit = await _service.CreateDepositAsync(createModel);
-
-        if (deposit == null)
+        [HttpGet("{accountId}")]
+        public async Task<ActionResult<Deposit>> GetDeposit(string accountId)
         {
-            return BadRequest("El monto del depósito no es válido.");
+            var deposit = await _service.GetDepositAsync(accountId);
+            if (deposit == null)
+            {
+                return NotFound();
+            }
+            return deposit;
         }
 
-        return CreatedAtAction(nameof(GetDeposit), new { accountId = deposit.AccountId, bankId = deposit.BankId }, deposit);
-    }
-
-    [HttpPut("{accountId}/{bankId}")]
-    public async Task<ActionResult<DepositDTO>> UpdateDeposit(int accountId, int bankId, UpdateDepositModel updateModel)
-    {
-        var deposit = await _service.UpdateDepositAsync(accountId, bankId, updateModel);
-
-        if (deposit == null)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Deposit>>> GetDeposits([FromQuery] FilterDepositModel filterModel)
         {
-            return NotFound();
+            var deposits = await _service.GetDepositsAsync(filterModel);
+            return Ok(deposits);
         }
 
-        return deposit;
-    }
-
-    [HttpDelete("{accountId}/{bankId}")]
-    public async Task<IActionResult> DeleteDeposit(int accountId, int bankId)
-    {
-        var result = await _service.DeleteDepositAsync(accountId, bankId);
-
-        if (!result)
+        [HttpPost]
+        public async Task<ActionResult<Deposit>> CreateDeposit(CreateDepositModel createModel)
         {
-            return NotFound();
+            var deposit = await _service.CreateDepositAsync(createModel);
+            return CreatedAtAction(nameof(GetDeposit), new { accountId = deposit.AccountId }, deposit);
         }
 
-        return NoContent();
+        [HttpPut("{accountId}")]
+        public async Task<ActionResult> UpdateDeposit(string accountId, UpdateDepositModel updateModel)
+        {
+            try
+            {
+                await _service.UpdateDepositAsync(accountId, updateModel);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{accountId}")]
+        public async Task<ActionResult> DeleteDeposit(string accountId)
+        {
+            try
+            {
+                await _service.DeleteDepositAsync(accountId);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }
-
