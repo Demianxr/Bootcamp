@@ -1,52 +1,53 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
+using Core.Request;
+using FluentValidation;
+using Infrastructure.Repositories;
 
-namespace BankAPI.Services
+namespace Infrastructure.Services;
+
+public class DepositService : IDepositService
 {
-    public class DepositService : IDepositService
+    private readonly IDepositRepository _depositRepository;
+
+    public DepositService(IDepositRepository depositRepository)
     {
-        private readonly IDepositRepository _repository;
-        private const decimal OperationalLimit = 100000m; // Límite operacional
+        _depositRepository = depositRepository;
+    }
 
-        public DepositService(IDepositRepository repository)
+    public async Task<DepositDTO> Add(CreateDepositModel model)
+    {
+
+        // Verificar si la cuenta existe
+        var accountExists = await _depositRepository.DoesAccountExist(model.AccountId);
+        if (!accountExists)
         {
-            _repository = repository;
+            throw new NotFoundException("Account does not exist.");
         }
 
-        public async Task<Deposit> GetDepositAsync(string accountId)
+        // Verificar si el banco existe
+        var bankExists = await _depositRepository.DoesBankExist(model.BankId);
+        if (!bankExists)
         {
-            return await _repository.GetDepositAsync(accountId);
+            throw new NotFoundException("Bank does not exist.");
         }
 
-        public async Task<IEnumerable<Deposit>> GetDepositsAsync(FilterDepositModel filterModel)
+        bool exceedsLimit = await _depositRepository.ExceedsOperationalLimitForCurrentAccount(model.AccountId, model.Amount, model.DepositDateTime);
+
+        // Si excede el límite operacional, lanzar una excepción
+        if (exceedsLimit)
         {
-            // Aquí puedes agregar la lógica para filtrar los depósitos según el modelo de filtro
-            return await _repository.GetDepositsAsync(filterModel);
+            throw new BusinessLogicException("Deposit exceeds the operational limit for the destination account.");
         }
 
-        public async Task<Deposit> CreateDepositAsync(CreateDepositModel createModel)
-        {
-            if (createModel.Amount > OperationalLimit) // Límite operacional
-            {
-                throw new InvalidOperationException("Operational limit exceeded");
-            }
 
-            return await _repository.CreateDepositAsync(createModel);
-        }
+        return await _depositRepository.Add(model);
+    }
 
-        public async Task<Deposit> UpdateDepositAsync(string accountId, UpdateDepositModel updateModel)
-        {
-            if (updateModel.Amount > OperationalLimit) // Límite operacional
-            {
-                throw new InvalidOperationException("Operational limit exceeded");
-            }
-
-            return await _repository.UpdateDepositAsync(accountId, updateModel);
-        }
-
-        public async Task DeleteDepositAsync(string accountId)
-        {
-            await _repository.DeleteDepositAsync(accountId);
-        }
+    public async Task<List<DepositDTO>> GetAll()
+    {
+        return await _depositRepository.GetAll();
     }
 }

@@ -1,18 +1,11 @@
-﻿namespace Core.Requests
-{
-    public class CreateServicePaymentModel
-    {
-        public string DocumentNumber { get; set; }
-        public decimal Amount { get; set; }
-        public string Description { get; set; }
-        public int DebitAccountId { get; set; }
+﻿namespace Core.Request;
 
-        public CreateServicePaymentModel(string documentNumber, decimal amount, string description, int debitAccountId)
-        {
-            this.DocumentNumber = documentNumber;
-            this.Amount = amount;
-            this.Description = description;
-            this.DebitAccountId = debitAccountId;
-        }
-    }
+public class CreateServicePaymentModel
+{
+    public DateTime PaymentDateTime { get; set; }
+    public string DocumentNumber { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public decimal Amount { get; set; }
+    public int AccountId { get; set; }
+    public int ServiceId { get; set; }
 }

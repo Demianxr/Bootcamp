@@ -1,65 +1,41 @@
-﻿using Core.Entities;
-using Core.Exceptions; 
+﻿using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Core.Requests;
+using Core.Models;
+using Core.Request;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services;
+
+public class ServicePaymentService : IServicePaymentService
 {
-    public class ServicePaymentService : IServicePaymentService
+    private readonly IServicePaymentRepository _paymentRepository;
+
+    public ServicePaymentService(IServicePaymentRepository paymentRepository)
     {
-        private readonly IServicePaymentRepository _repository;
+        _paymentRepository = paymentRepository;
+    }
 
-        public ServicePaymentService(IServicePaymentRepository repository)
+
+    public async Task<ServicePaymentDTO> Add(CreateServicePaymentModel model)
+    {
+        var serviceExists = await _paymentRepository.VerifyServiceExists(model.ServiceId);
+        if (!serviceExists)
         {
-            _repository = repository;
+            throw new BusinessLogicException($"Service {model.ServiceId} does not exist.");
         }
 
-        public async Task<ServicePayment> GetServicePaymentByIdAsync(int id)
+        var sufficientBalance = await _paymentRepository.IsSufficientBalance(model.AccountId, model.Amount);
+        if (!sufficientBalance)
         {
-            return await _repository.GetByIdAsync(id);
+            throw new BusinessLogicException($"Insufficient balance in account {model.AccountId}.");
         }
 
-        public async Task<IEnumerable<ServicePayment>> GetAllServicePaymentsAsync()
-        {
-            return await _repository.GetAllAsync();
-        }
+        return await _paymentRepository.Add(model);
+    }
 
-        public async Task<ServicePayment> AddServicePaymentAsync(CreateServicePaymentModel model)
-        {
-            
 
-            var servicePayment = new ServicePayment
-            {
-                DocumentNumber = model.DocumentNumber,
-                Amount = model.Amount,
-                Description = model.Description,
-                DebitAccountId = model.DebitAccountId,
-                PaymentDate = DateTime.Now
-            };
-
-            return await _repository.AddAsync(servicePayment);
-        }
-
-        public async Task<ServicePayment> UpdateServicePaymentAsync(UpdateServicePaymentModel model)
-        {
-            var servicePayment = await _repository.GetByIdAsync(model.Id);
-            if (servicePayment == null)
-            {
-                throw new NotFoundException($"Service payment with ID {model.Id} not found"); 
-            }
-
-            servicePayment.DocumentNumber = model.DocumentNumber;
-            servicePayment.Amount = model.Amount;
-            servicePayment.Description = model.Description;
-            servicePayment.DebitAccountId = model.DebitAccountId;
-
-            return await _repository.UpdateAsync(servicePayment);
-        }
-
-        public async Task DeleteServicePaymentAsync(int id)
-        {
-            await _repository.DeleteAsync(id);
-        }
+    public async Task<List<ServicePaymentDTO>> GetAll()
+    {
+        return await _paymentRepository.GetAll();
     }
 }

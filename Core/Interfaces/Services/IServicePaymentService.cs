@@ -1,14 +1,10 @@
-﻿using Core.Entities;
-using Core.Requests;
+﻿using Core.Models;
+using Core.Request;
 
-namespace Core.Interfaces.Services
+namespace Core.Interfaces.Services;
+
+public interface IServicePaymentService
 {
-    public interface IServicePaymentService
-    {
-        Task<ServicePayment> GetServicePaymentByIdAsync(int id);
-        Task<IEnumerable<ServicePayment>> GetAllServicePaymentsAsync();
-        Task<ServicePayment> AddServicePaymentAsync(CreateServicePaymentModel model);
-        Task<ServicePayment> UpdateServicePaymentAsync(UpdateServicePaymentModel model);
-        Task DeleteServicePaymentAsync(int id);
-    }
+    Task<List<ServicePaymentDTO>> GetAll();
+    Task<ServicePaymentDTO> Add(CreateServicePaymentModel model);
 }

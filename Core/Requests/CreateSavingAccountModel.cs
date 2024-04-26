@@ -4,5 +4,5 @@ namespace Core.Requests;
 
 public class CreateSavingAccountModel
 {
-    public SavingType SavingType { get; set; }
+    public ESavingType SavingType { get; set; }
 }

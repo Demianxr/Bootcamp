@@ -1,51 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Interfaces.Services;
+using Core.Request;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("[controller]")]
-public class WithdrawalController : ControllerBase
+namespace WebApi.Controllers;
+
+public class WithdrawalController : BaseApiController
 {
-    private readonly IWithdrawalService _withdrawalService;
-
-    public WithdrawalController(IWithdrawalService withdrawalService)
+    private readonly IWithdrawalService _service;
+    public WithdrawalController(IWithdrawalService service)
     {
-        _withdrawalService = withdrawalService;
+        _service = service;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateWithdrawal([FromBody] CreateWithdrawalModel model)
+    public async Task<IActionResult> Create([FromBody] CreateWithdrawalModel request)
     {
-        var withdrawal = await _withdrawalService.CreateWithdrawalAsync(model);
-        return CreatedAtAction(nameof(GetWithdrawal), new { id = withdrawal.AccountId }, withdrawal);
+        return Ok(await _service.Add(request));
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateWithdrawal(int id, [FromBody] UpdateWithdrawalModel model)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
     {
-        await _withdrawalService.UpdateWithdrawalAsync(id, model);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteWithdrawal(int id)
-    {
-        await _withdrawalService.DeleteWithdrawalAsync(id);
-        return NoContent();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetWithdrawal(int id)
-    {
-        var withdrawal = await _withdrawalService.GetWithdrawalAsync(id);
-        if (withdrawal == null)
-            return NotFound();
-
-        return Ok(withdrawal);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> FilterWithdrawals([FromQuery] FilterWithdrawalModel filterModel)
-    {
-        var withdrawals = await _withdrawalService.FilterWithdrawalsAsync(filterModel);
+        var withdrawals = await _service.GetAll();
         return Ok(withdrawals);
     }
 }

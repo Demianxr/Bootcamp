@@ -1,8 +1,13 @@
-﻿public interface IWithdrawalRepository
+﻿using Core.Models;
+using Core.Request;
+
+namespace Core.Interfaces.Repositories;
+
+public interface IWithdrawalRepository
 {
-    Task<Withdrawal> CreateAsync(Withdrawal withdrawal);
-    Task<Withdrawal> UpdateAsync(Withdrawal withdrawal);
-    Task DeleteAsync(int id);
-    Task<Withdrawal> GetByIdAsync(int id);
-    Task<IEnumerable<Withdrawal>> FilterAsync(FilterWithdrawalModel filterModel);
+    Task<List<WithdrawalDTO>> GetAll();
+    Task<WithdrawalDTO> Add(CreateWithdrawalModel model);
+    Task<bool> DoesAccountExist(int accountId);
+    Task<bool> DoesBankExist(int bankId);
+
 }

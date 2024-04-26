@@ -10,7 +10,7 @@ namespace Core.Entities;
         public string CardNumber { get; set; } = string.Empty;
         public int CVV { get; set; }
 
-        public CreditCardStatus CreditCardStatus { get; set; } = CreditCardStatus.Enabled;
+        public ECreditCardStatus CreditCardStatus { get; set; } = ECreditCardStatus.Enabled;
 
         public decimal CreditLimit { get; set; }
         public decimal Availablecredit { get; set; }

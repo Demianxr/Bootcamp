@@ -3,7 +3,6 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
-using Core.Requests;
 using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
@@ -26,11 +25,6 @@ public class CurrencyService : ICurrencyService
     public async Task<bool> Delete(int id)
     {
         return await _currencyRepository.Delete(id);
-    }
-
-    public async Task<List<CurrencyDTO>> GetAll()
-    {
-        return await _currencyRepository.GetAll();
     }
 
     public async Task<CurrencyDTO> GetById(int id)

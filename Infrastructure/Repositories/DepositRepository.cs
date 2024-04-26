@@ -1,60 +1,117 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Constants;
+using Core.Entities;
+using Core.Interfaces.Repositories;
+using Core.Models;
+using Core.Request;
+using FluentValidation;
 using Infrastructure.Contexts;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace BankAPI.Repositories
+namespace Infrastructure.Repositories;
+
+public class DepositRepository : IDepositRepository
 {
-    public class DepositRepository : IDepositRepository
+    private readonly BootcampContext _context;
+
+    public DepositRepository(BootcampContext context)
     {
-        private readonly BootcampContext _context;
+        _context = context;
+    }
 
-        public DepositRepository(BootcampContext context)
+    public async Task<DepositDTO> Add(CreateDepositModel model)
+    {
+        var depositToCreate = model.Adapt<Deposit>();
+
+        await UpdateAccountBalanceForDeposit(model.AccountId, model.Amount);
+
+        _context.Deposits.Add(depositToCreate);
+
+        var result = await _context.SaveChangesAsync();
+        var query = await _context.Deposits
+            .Include(a => a.Account)
+                .ThenInclude(a => a.Customer)
+                    .ThenInclude(a => a.Bank)
+            .SingleOrDefaultAsync(r => r.Id == depositToCreate.Id);
+        var depositDTO = query.Adapt<DepositDTO>();
+        return depositDTO;
+    }
+
+    public async Task<List<DepositDTO>> GetAll()
+    {
+        var query = _context.Deposits
+               .Include(a => a.Account)
+               .ThenInclude(a => a.Customer)
+               .ThenInclude(a => a.Bank)
+               .AsQueryable();
+        var deposits = await _context.Deposits.ToListAsync();
+        var depositDTO = deposits.Adapt<List<DepositDTO>>();
+        return depositDTO;
+    }
+
+
+    public async Task UpdateAccountBalanceForDeposit(int accountId, decimal amount)
+    {
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == accountId);
+        if (account != null)
         {
-            _context = context;
-        }
-
-        public async Task<Deposit> GetDepositAsync(string accountId)
-        {
-            return await _context.Deposits.FindAsync(accountId);
-        }
-
-        public async Task<IEnumerable<Deposit>> GetDepositsAsync(FilterDepositModel filterModel)
-        {
-            // Aquí puedes agregar la lógica para filtrar los depósitos según el modelo de filtro
-            return await _context.Deposits.ToListAsync();
-        }
-
-        public async Task<Deposit> CreateDepositAsync(CreateDepositModel createModel)
-        {
-            var deposit = new Deposit(createModel.AccountId, createModel.BankId, createModel.Amount);
-            _context.Deposits.Add(deposit);
-            await _context.SaveChangesAsync();
-            return deposit;
-        }
-
-        public async Task<Deposit> UpdateDepositAsync(string accountId, UpdateDepositModel updateModel)
-        {
-            var deposit = await _context.Deposits.FindAsync(accountId);
-            if (deposit == null)
-            {
-                throw new KeyNotFoundException("Deposit not found");
-            }
-
-            deposit.Amount = updateModel.Amount;
-            await _context.SaveChangesAsync();
-            return deposit;
-        }
-
-        public async Task DeleteDepositAsync(string accountId)
-        {
-            var deposit = await _context.Deposits.FindAsync(accountId);
-            if (deposit == null)
-            {
-                throw new KeyNotFoundException("Deposit not found");
-            }
-
-            _context.Deposits.Remove(deposit);
+            account.Balance += amount;
             await _context.SaveChangesAsync();
         }
     }
+
+
+    public async Task<bool> ExceedsOperationalLimitForCurrentAccount(int accountId, decimal amount, DateTime transactionDate)
+    {
+        var account = await _context.Accounts
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == accountId);
+
+        if (account?.AccountType == EAccountType.Current && account.CurrentAccount != null)
+        {
+            decimal totalAmount = await CalculateTotalAmount(accountId, transactionDate);
+
+            return (amount + totalAmount) > account.CurrentAccount.OperationalLimit;
+        }
+
+        // Si la cuenta no es de tipo corriente, no se aplica esta validación
+        return false;
+    }
+
+    private async Task<decimal> CalculateTotalAmount(int accountId, DateTime transactionDate)
+    {
+        var account = await _context.Accounts
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == accountId);
+
+        if (account == null || account.AccountType != EAccountType.Current || account.CurrentAccount == null)
+        {
+            // Si la cuenta no es de tipo Current o no tiene un CurrentAccount asociado, retornar 0
+            return 0;
+        }
+
+        decimal totalDepositsAmount = await _context.Deposits
+            .Where(d => d.AccountId == accountId && d.DepositDateTime.Month == transactionDate.Month)
+            .SumAsync(d => d.Amount);
+
+        decimal totalMovementsAmount = await _context.Movements
+            .Where(m => (m.AccountSourceId == accountId || m.AccountDestinationId == accountId) &&
+                        m.TransferredDateTime.Month == transactionDate.Month)
+            .SumAsync(m => m.Amount);
+
+        return totalDepositsAmount + totalMovementsAmount;
+    }
+
+    public async Task<bool> DoesAccountExist(int accountId)
+    {
+        var account = await _context.Accounts.FindAsync(accountId);
+        return account != null;
+    }
+
+    public async Task<bool> DoesBankExist(int bankId)
+    {
+        var bank = await _context.Banks.FindAsync(bankId);
+        return bank != null;
+    }
+
 }

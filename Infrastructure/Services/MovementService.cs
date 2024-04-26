@@ -1,61 +1,38 @@
-﻿using Core.Interfaces.Repositories;
+﻿using Core.Exceptions;
+using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
-using Core.Requests;
+using Core.Request;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Services;
+
+public class MovementService : IMovementService
 {
-    public class MovementService : IMovementService
+    private readonly IMovementRepository _movementRepository;
+    private readonly ITransferValidationService _validationService;
+
+    public MovementService(IMovementRepository movementRepository, ITransferValidationService validationService)
     {
-        private readonly IMovementRepository _movementRepository;
-
-        public MovementService(IMovementRepository movementRepository)
+        _movementRepository = movementRepository; // Inyectado
+        _validationService = validationService; // Inyectado
+    }
+    public async Task<MovementDTO> Add(CreateMovementModel model)
+    {
+        bool isValid = await _validationService.ValidateTransfer(model.AccountSourceId, model.AccountDestinationId, model.Amount,
+                                                                 model.DestinationBankId, model.DestinationDocumentNumber,
+                                                                 model.DestinationAccountNumber, model.CurrencyId, model.TransferredDateTime.HasValue ? model.TransferredDateTime.Value : default);
+        if (!isValid)
         {
-            _movementRepository = movementRepository;
+            throw new BusinessLogicException("Movement validation failed.");
         }
 
-        public async Task<IEnumerable<MovementDTO>> GetMovementsAsync(FilterMovementModel filter)
-        {
-            var movements = await _movementRepository.GetMovementsAsync(filter);
-            return movements.Select(m => new MovementDTO
-            {
-                Id = m.Id,
-                Destination = m.Destination,
-                Amount = m.Amount,
-                TransferredDateTime = m.TransferredDateTime,
-                TransferStatus = m.TransferStatus.ToString(),
-                AccountId = m.AccountId
-            });
-        }
 
-        public async Task<MovementDTO> GetMovementByIdAsync(int id)
-        {
-            var movement = await _movementRepository.GetMovementByIdAsync(id);
-            return new MovementDTO
-            {
-                Id = movement.Id,
-                Destination = movement.Destination,
-                Amount = movement.Amount,
-                TransferredDateTime = movement.TransferredDateTime,
-                TransferStatus = movement.TransferStatus.ToString(),
-                AccountId = movement.AccountId
-            };
-        }
+        return await _movementRepository.Add(model);
+    }
 
-        public async Task CreateMovementAsync(CreateMovementModel movement)
-        {
-            await _movementRepository.CreateMovementAsync(movement);
-        }
-
-        public async Task UpdateMovementAsync(UpdateMovementModel movement)
-        {
-            await _movementRepository.UpdateMovementAsync(movement);
-        }
-
-        public async Task DeleteMovementAsync(int id)
-        {
-            await _movementRepository.DeleteMovementAsync(id);
-        }
+    public async Task<List<MovementDTO>> GetAll()
+    {
+        return await _movementRepository.GetAll();
     }
 
 }

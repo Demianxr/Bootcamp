@@ -1,47 +1,16 @@
-﻿ public class Deposit
-    {
-        public string AccountId { get; set; }
-        public string BankId { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime TransactionDate { get; set; }
+﻿namespace Core.Entities;
 
-        public Deposit(string accountId, string bankId, decimal amount)
-        {
-            if (string.IsNullOrEmpty(accountId) || string.IsNullOrEmpty(bankId) || amount <= 0)
-            {
-                throw new ArgumentException("Invalid arguments");
-            }
+public class Deposit
+{
+    public int Id { get; set; }
 
-            AccountId = accountId;
-            BankId = bankId;
-            Amount = amount;
-            TransactionDate = DateTime.Now;
-        }
+    public decimal Amount { get; set; }
 
-        
-        public bool ValidateAmount(decimal operationalLimit)
-        {
-            if (Amount > operationalLimit)
-            {
-                return false;
-            }
-            return true;
-        }
+    public string Description { get; set; } = string.Empty;
 
+    public DateTime DepositDateTime { get; set; }
 
-        public void UpdateBalance(Account account)
-        {
-            if (account == null)
-            {
-                throw new ArgumentNullException(nameof(account));
-            }
+    public int AccountId { get; set; }
 
-            if (account.Balance + Amount > 100000)
-            {
-                throw new InvalidOperationException("Operational limit exceeded");
-            }
-
-            account.Balance += Amount;
-        }
-    }
-
+    public Account Account { get; set; } = null!;
+}

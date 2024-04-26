@@ -11,8 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using BankAPI.Repositories;
-using BankAPI.Services;
+using Core.Services;
 
 namespace Infrastructure;
 
@@ -50,11 +49,11 @@ public static class DependencyInjection
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IPromotionRepository, PromotionRepository>();
         services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
-        services.AddScoped<IUserRequestRepository, UserRequestRepository>();
+        services.AddScoped<IRequestRepository, RequestRepository>();
         services.AddScoped<IServicePaymentRepository, ServicePaymentRepository>();
         services.AddScoped<IDepositRepository, DepositRepository>();
-        services.AddScoped<IServicePaymentRepository, ServicePaymentRepository>();
         services.AddScoped<IWithdrawalRepository, WithdrawalRepository>();
+        services.AddScoped<ITransferRepository, TransferRepository>();
 
         
 
@@ -71,10 +70,11 @@ public static class DependencyInjection
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IPromotionService, PromotionService>();
         services.AddScoped<IEnterpriseService, EnterpriseService>();
-        services.AddScoped<IUserRequestService, UserRequestService>();
+        services.AddScoped<IRequestService, RequestService>();
         services.AddScoped<IDepositService, DepositService>();
         services.AddScoped<IServicePaymentService, ServicePaymentService>();
         services.AddScoped<IWithdrawalService, WithdrawalService>();
+        services.AddScoped<ITransferService, TransferService>();
         
         
 

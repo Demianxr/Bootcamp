@@ -6,29 +6,33 @@ namespace Infrastructure.Configurations;
 
 public class MovementConfiguration : IEntityTypeConfiguration<Movement>
 {
-    public void Configure(EntityTypeBuilder<Movement> builder)
+    public void Configure(EntityTypeBuilder<Movement> entity)
     {
-        builder.HasKey(m => m.Id);
 
-        builder.Property(m => m.Destination)
-            .IsRequired()
-            .HasMaxLength(100);
+        entity
+            .HasKey(e => e.Id)
+            .HasName("Movement_pkey");
 
-        builder.Property(m => m.Amount)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
+        entity
+            .Property(e => e.Description)
+            .HasMaxLength(300);
 
-        builder.Property(m => m.TransferredDateTime)
-            .IsRequired();
+        entity
+            .Property(e => e.Amount)
+            .HasPrecision(20, 5);
 
-        builder.Property(m => m.TransferStatus)
-            .IsRequired();
+        entity
+            .Property(e => e.TransferredDateTime);
 
-        builder.HasOne(m => m.Account)
-            .WithMany(a => a.Movements)
-            .HasForeignKey(m => m.AccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+
+        entity.HasOne(d => d.Account)
+            .WithMany(p => p.Movements)
+            .HasForeignKey(d => d.AccountDestinationId);
+
+
+        entity.HasOne(d => d.Account)
+            .WithMany(p => p.Movements)
+            .HasForeignKey(d => d.AccountSourceId);
+
     }
 }
-
-

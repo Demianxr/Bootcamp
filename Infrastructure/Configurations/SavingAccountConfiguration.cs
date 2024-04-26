@@ -18,9 +18,6 @@ public class SavingAccountConfiguration : IEntityTypeConfiguration<SavingAccount
             .IsRequired();
 
 
-        entity
-            .HasOne(d => d.Account)
-            .WithOne(p => p.SavingAccount)
-            .HasForeignKey<SavingAccount>(d => d.AccountId);
+        
     }
 }

@@ -1,4 +1,14 @@
-﻿public class WithdrawalService : IWithdrawalService
+﻿using Core.Exceptions;
+using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
+using Core.Models;
+using Core.Request;
+using FluentValidation;
+using Infrastructure.Repositories;
+
+namespace Infrastructure.Services;
+
+public class WithdrawalService : IWithdrawalService
 {
     private readonly IWithdrawalRepository _withdrawalRepository;
 
@@ -7,34 +17,27 @@
         _withdrawalRepository = withdrawalRepository;
     }
 
-    public async Task<Withdrawal> CreateWithdrawalAsync(CreateWithdrawalModel model)
+    public async Task<WithdrawalDTO> Add(CreateWithdrawalModel model)
     {
-        var withdrawal = new Withdrawal(model.AccountId, model.BankId, model.Amount);
-        return await _withdrawalRepository.CreateAsync(withdrawal);
+        // Verificar si la cuenta existe
+        var accountExists = await _withdrawalRepository.DoesAccountExist(model.AccountId);
+        if (!accountExists)
+        {
+            throw new NotFoundException("Account does not exist.");
+        }
+
+        // Verificar si el banco existe
+        var bankExists = await _withdrawalRepository.DoesBankExist(model.BankId);
+        if (!bankExists)
+        {
+            throw new NotFoundException("Bank does not exist.");
+        }
+
+        return await _withdrawalRepository.Add(model);
     }
 
-    public async Task<Withdrawal> UpdateWithdrawalAsync(int id, UpdateWithdrawalModel model)
+    public async Task<List<WithdrawalDTO>> GetAll()
     {
-        var withdrawal = await _withdrawalRepository.GetByIdAsync(id);
-        if (withdrawal == null)
-            throw new KeyNotFoundException("Withdrawal not found.");
-
-        withdrawal.Amount = model.Amount;
-        return await _withdrawalRepository.UpdateAsync(withdrawal);
-    }
-
-    public async Task DeleteWithdrawalAsync(int id)
-    {
-        await _withdrawalRepository.DeleteAsync(id);
-    }
-
-    public async Task<Withdrawal> GetWithdrawalAsync(int id)
-    {
-        return await _withdrawalRepository.GetByIdAsync(id);
-    }
-
-    public async Task<IEnumerable<Withdrawal>> FilterWithdrawalsAsync(FilterWithdrawalModel filterModel)
-    {
-        return await _withdrawalRepository.FilterAsync(filterModel);
+        return await _withdrawalRepository.GetAll();
     }
 }

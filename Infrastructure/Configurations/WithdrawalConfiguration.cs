@@ -1,24 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core.Entities;
+using Core.Models;
+using Core.Request;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infrastructure.Configurations;
 
 public class WithdrawalConfiguration : IEntityTypeConfiguration<Withdrawal>
 {
-    public void Configure(EntityTypeBuilder<Withdrawal> builder)
+    public void Configure(EntityTypeBuilder<Withdrawal> entity)
     {
-        builder.HasKey(w => w.AccountId);
+        entity
+           .HasKey(e => e.Id)
+           .HasName("Withdrawal_pkey");
 
-        builder.Property(w => w.AccountId)
-            .IsRequired();
+        entity
+         .Property(e => e.Amount)
+         .HasPrecision(20, 5);
 
-        builder.Property(w => w.BankId)
-            .IsRequired();
-
-        builder.Property(w => w.Amount)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
-
-        builder.Property(w => w.TransactionDate)
-            .IsRequired()
-            .HasColumnType("timestamp with time zone");
+        entity.HasOne(d => d.Account)
+           .WithMany(p => p.Withdrawals)
+           .HasForeignKey(d => d.AccountId);
     }
 }

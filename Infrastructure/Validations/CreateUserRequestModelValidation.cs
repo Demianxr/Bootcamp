@@ -1,16 +1,19 @@
-﻿using Core.Requests;
+﻿using Core.Request;
 using FluentValidation;
 
-namespace Infrastructure.Validations
+namespace Infrastructure.Validations;
+
+public class CreateRequestModelValidation : AbstractValidator<CreateRequestModel>
 {
-    public class CreateUserRequestModelValidation : AbstractValidator<CreateUserRequestModel>
+    public CreateRequestModelValidation()
     {
-        public CreateUserRequestModelValidation()
-        {
-            RuleFor(model => model.ProductType).NotEmpty().MaximumLength(50);
-            RuleFor(model => model.Amount).GreaterThan(0);
-            RuleFor(model => model.Currency).NotEmpty().Length(3);
-            // Agrega cualquier otra regla de validación necesaria
-        }
+        RuleFor(x => x.ProductId)
+          .NotEmpty().WithMessage("Customer Id cannot be empty");
+
+        RuleFor(x => x.CustomerId)
+             .NotEmpty().WithMessage("Customer Id cannot be empty");
+
+        RuleFor(x => x.CurrencyId)
+             .NotEmpty().WithMessage("Currency Id cannot be empty");
     }
 }

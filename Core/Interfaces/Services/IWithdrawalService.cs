@@ -1,8 +1,10 @@
-﻿public interface IWithdrawalService
+﻿using Core.Models;
+using Core.Request;
+
+namespace Core.Interfaces.Services;
+
+public interface IWithdrawalService
 {
-    Task<Withdrawal> CreateWithdrawalAsync(CreateWithdrawalModel model);
-    Task<Withdrawal> UpdateWithdrawalAsync(int id, UpdateWithdrawalModel model);
-    Task DeleteWithdrawalAsync(int id);
-    Task<Withdrawal> GetWithdrawalAsync(int id);
-    Task<IEnumerable<Withdrawal>> FilterWithdrawalsAsync(FilterWithdrawalModel filterModel);
+    Task<List<WithdrawalDTO>> GetAll();
+    Task<WithdrawalDTO> Add(CreateWithdrawalModel model);
 }

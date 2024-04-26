@@ -1,36 +1,55 @@
 ﻿using Core.Constants;
-using Core.Entities;
-
-namespace Core.Models;
+using Core.Models;
 
 public class CreditCardDTO
 {
     public int Id { get; set; }
-    public string Designation { get; set; } = string.Empty;
+    private string _designation;
+    public string Designation
+    {
+        get { return _designation; }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("La designación no puede estar vacía.", nameof(value));
+            }
+            _designation = value;
+        }
+    }
     public DateTime IssueDate { get; set; }
     public DateTime ExpirationDate { get; set; }
-    public string CardNumber { get; set; } = string.Empty;
+    private string _cardNumber;
+    public string CardNumber
+    {
+        get { return _cardNumber; }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("El número de la tarjeta no puede estar vacío.", nameof(value));
+            }
+            _cardNumber = value;
+        }
+    }
     public int Cvv { get; set; }
-    public CreditCardStatus CreditCardStatus { get; set; } = CreditCardStatus.Enabled;
-
-
+    public ECreditCardStatus CreditCardStatus { get; set; } = ECreditCardStatus.Enabled;
     public decimal CreditLimit { get; set; }
     public decimal AvailableCredit { get; set; }
     public decimal CurrentDebt { get; set; }
     public decimal InterestRate { get; set; }
-
-    public CurrencyDTO Currency { get; set; } = null!;
-    public CustomerDTO Customer { get; set; } = null!;
+    public CurrencyDTO Currency { get; set; }
+    public CustomerDTO Customer { get; set; }
 
     public string MaskedCardNumber
     {
         get
         {
-            if (string.IsNullOrEmpty(CardNumber) || CardNumber.Length < 16)
+            if (string.IsNullOrEmpty(CardNumber))
                 return string.Empty;
 
-            return "****-****-****-" + CardNumber.Substring(CardNumber.Length - 4);
+            var lastFourDigits = CardNumber.Length >= 4 ? CardNumber.Substring(CardNumber.Length - 4) : CardNumber;
+            return "****-****-****-" + lastFourDigits;
         }
     }
 }
-

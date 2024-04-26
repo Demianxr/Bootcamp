@@ -1,12 +1,13 @@
-﻿namespace Core.Interfaces.Repositories
+﻿using Core.Models;
+using Core.Request;
 
+namespace Core.Interfaces.Repositories;
+
+public interface IDepositRepository
 {
-    public interface IDepositRepository
-    {
-        Task<Deposit> GetDepositAsync(string accountId);
-        Task<IEnumerable<Deposit>> GetDepositsAsync(FilterDepositModel filterModel);
-        Task<Deposit> CreateDepositAsync(CreateDepositModel createModel);
-        Task<Deposit> UpdateDepositAsync(string accountId, UpdateDepositModel updateModel);
-        Task DeleteDepositAsync(string accountId);
-    }
+    Task<List<DepositDTO>> GetAll();
+    Task<DepositDTO> Add(CreateDepositModel model);
+    Task<bool> ExceedsOperationalLimitForCurrentAccount(int accountId, decimal amount, DateTime transactionDate);
+    Task<bool> DoesAccountExist(int accountId);
+    Task<bool> DoesBankExist(int bankId);
 }

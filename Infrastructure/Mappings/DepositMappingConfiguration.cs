@@ -1,26 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Core.Entities;
+using Core.Models;
+using Core.Request;
+using Mapster;
 
-namespace BankAPI
+namespace Infrastructure.Mappings;
+
+public class DepositMappingConfiguration : IRegister
 {
-    public class DepositMappingConfiguration : IEntityTypeConfiguration<Deposit>
+    public void Register(TypeAdapterConfig config)
     {
-        public void Configure(EntityTypeBuilder<Deposit> builder)
-        {
-            builder.HasKey(d => d.AccountId);
+        config.NewConfig<CreateDepositModel, Deposit>()
+          .Map(dest => dest.Amount, src => src.Amount)
+          .Map(dest => dest.DepositDateTime, src => src.DepositDateTime)
+          .Map(dest => dest.AccountId, src => src.AccountId);
 
-            builder.Property(d => d.AccountId)
-                .IsRequired();
+        config.NewConfig<Deposit, DepositDTO>()
+         .Map(dest => dest.Id, src => src.Id)
+         .Map(dest => dest.Amount, src => src.Amount)
+         .Map(dest => dest.DepositDateTime, src => src.DepositDateTime)
+         .Map(dest => dest.Account, src => src.Account);
 
-            builder.Property(d => d.BankId)
-                .IsRequired();
-
-            builder.Property(d => d.Amount)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(d => d.TransactionDate)
-                .IsRequired();
-        }
     }
 }

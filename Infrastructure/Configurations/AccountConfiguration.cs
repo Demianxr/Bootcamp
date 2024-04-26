@@ -35,7 +35,28 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         entity
             .HasMany(account => account.Movements)
             .WithOne(movement => movement.Account)
-            .HasForeignKey(movement => movement.AccountId);
+            .HasForeignKey(movement => movement.AccountDestinationId);
+
+
+        entity
+            .HasMany(account => account.Movements)
+            .WithOne(movement => movement.Account)
+            .HasForeignKey(movement => movement.AccountSourceId);
+
+        entity
+           .HasMany(account => account.Payments)
+           .WithOne(payment => payment.Account)
+           .HasForeignKey(payment => payment.AccountId);
+
+        entity
+          .HasMany(account => account.Deposits)
+          .WithOne(deposit => deposit.Account)
+          .HasForeignKey(deposit => deposit.AccountId);
+
+        entity
+          .HasMany(account => account.Withdrawals)
+          .WithOne(withdrawal => withdrawal.Account)
+          .HasForeignKey(withdrawal => withdrawal.AccountId);
 
         entity
             .HasOne(account => account.SavingAccount)

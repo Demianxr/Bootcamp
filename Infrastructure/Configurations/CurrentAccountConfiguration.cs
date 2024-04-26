@@ -24,9 +24,6 @@ public class CurrentAccountConfiguration : IEntityTypeConfiguration<CurrentAccou
             .Property(e => e.MonthAverage)
             .HasColumnType("numeric(20,5)");
 
-        entity
-            .HasOne(d => d.Account)
-            .WithOne(p => p.CurrentAccount)
-            .HasForeignKey<CurrentAccount>(d => d.AccountId);
+        
     }
 }

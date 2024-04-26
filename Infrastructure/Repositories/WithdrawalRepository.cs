@@ -1,5 +1,14 @@
-﻿using Infrastructure.Contexts;
+﻿using Core.Constants;
+using Core.Entities;
+using Core.Exceptions;
+using Core.Interfaces.Repositories;
+using Core.Models;
+using Core.Request;
+using Infrastructure.Contexts;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Repositories;
 
 public class WithdrawalRepository : IWithdrawalRepository
 {
@@ -9,58 +18,70 @@ public class WithdrawalRepository : IWithdrawalRepository
     {
         _context = context;
     }
-
-    public async Task<Withdrawal> CreateAsync(Withdrawal withdrawal)
+    public async Task<WithdrawalDTO> Add(CreateWithdrawalModel model)
     {
-        _context.Withdrawals.Add(withdrawal);
-        await _context.SaveChangesAsync();
-        return withdrawal;
+        var withdrawalToCreate = model.Adapt<Withdrawal>();
+
+        await UpdateAccountBalanceForWithdrawal(model.AccountId, model.Amount);
+
+
+        _context.Withdrawals.Add(withdrawalToCreate);
+
+        var result = await _context.SaveChangesAsync();
+
+        var query = await _context.Withdrawals
+            .Include(a => a.Account)
+                .ThenInclude(a => a.Customer)
+                    .ThenInclude(a => a.Bank)
+            .SingleOrDefaultAsync(r => r.Id == withdrawalToCreate.Id);
+
+        var withdrawalDTO = query.Adapt<WithdrawalDTO>();
+        return withdrawalDTO;
     }
 
-    public async Task<Withdrawal> UpdateAsync(Withdrawal withdrawal)
+    public async Task UpdateAccountBalanceForWithdrawal(int accountId, decimal amount)
     {
-        _context.Entry(withdrawal).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return withdrawal;
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        var withdrawal = await _context.Withdrawals.FindAsync(id);
-        if (withdrawal != null)
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Id == accountId);
+        if (account != null)
         {
-            _context.Withdrawals.Remove(withdrawal);
+            if (account.Balance < amount)
+            {
+                // Si el saldo de la cuenta es menor que el monto de la extracción, lanzar una excepción de negocio
+                throw new BusinessLogicException("Insufficient balance in the account to process this withdrawal.");
+            }
+
+            // Actualizar el saldo de la cuenta
+            account.Balance -= amount;
+
+            // Guardar los cambios en la base de datos
             await _context.SaveChangesAsync();
         }
     }
 
-    public async Task<Withdrawal> GetByIdAsync(int id)
+
+    public async Task<List<WithdrawalDTO>> GetAll()
     {
-        return await _context.Withdrawals.FindAsync(id);
+        var query = _context.Withdrawals
+                       .Include(a => a.Account)
+                       .AsQueryable();
+
+        var deposits = await _context.Withdrawals.ToListAsync();
+
+        var withdrawalDTO = deposits.Adapt<List<WithdrawalDTO>>();
+
+        return withdrawalDTO;
     }
 
-    public async Task<IEnumerable<Withdrawal>> FilterAsync(FilterWithdrawalModel filterModel)
+    public async Task<bool> DoesAccountExist(int accountId)
     {
-        var query = _context.Withdrawals.AsQueryable();
-
-        if (filterModel.AccountId.HasValue)
-            query = query.Where(w => w.AccountId == filterModel.AccountId.Value);
-
-        if (filterModel.BankId.HasValue)
-            query = query.Where(w => w.BankId == filterModel.BankId.Value);
-
-        if (filterModel.MinAmount.HasValue)
-            query = query.Where(w => w.Amount >= filterModel.MinAmount.Value);
-
-        if (filterModel.MaxAmount.HasValue)
-            query = query.Where(w => w.Amount <= filterModel.MaxAmount.Value);
-
-        if (filterModel.StartDate.HasValue)
-            query = query.Where(w => w.TransactionDate >= filterModel.StartDate.Value);
-
-        if (filterModel.EndDate.HasValue)
-            query = query.Where(w => w.TransactionDate <= filterModel.EndDate.Value);
-
-        return await query.ToListAsync();
+        var account = await _context.Accounts.FindAsync(accountId);
+        return account != null;
     }
+
+    public async Task<bool> DoesBankExist(int bankId)
+    {
+        var bank = await _context.Banks.FindAsync(bankId);
+        return bank != null;
+    }
+
 }

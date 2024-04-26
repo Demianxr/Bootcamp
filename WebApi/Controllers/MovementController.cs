@@ -1,53 +1,29 @@
 ﻿using Core.Interfaces.Services;
-using Core.Requests;
+using Core.Request;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers;
+
+public class MovementController : BaseApiController
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class MovementController : ControllerBase
+    private readonly IMovementService _service;
+
+    public MovementController(IMovementService service)
     {
-        private readonly IMovementService _movementService;
+        _service = service;
+    }
 
-        public MovementController(IMovementService movementService)
-        {
-            _movementService = movementService;
-        }
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateMovementModel request)
+    {
+        return Ok(await _service.Add(request));
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMovements([FromQuery] FilterMovementModel filter)
-        {
-            var movements = await _movementService.GetMovementsAsync(filter);
-            return Ok(movements);
-        }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMovementById(int id)
-        {
-            var movement = await _movementService.GetMovementByIdAsync(id);
-            return Ok(movement);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateMovement([FromBody] CreateMovementModel movement)
-        {
-            await _movementService.CreateMovementAsync(movement);
-            return Ok();
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateMovement([FromBody] UpdateMovementModel movement)
-        {
-            await _movementService.UpdateMovementAsync(movement);
-            return Ok();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMovement(int id)
-        {
-            await _movementService.DeleteMovementAsync(id);
-            return Ok();
-        }
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
+    {
+        var movements = await _service.GetAll();
+        return Ok(movements);
     }
 }

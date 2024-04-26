@@ -25,6 +25,6 @@ public class CreateCustomerModelValidation : AbstractValidator<CreateCustomerMod
 
     private bool BeValidCustomerStatus(int arg)
     {
-        return Enum.IsDefined(typeof(CustomerStatus), arg);
+        return Enum.IsDefined(typeof(ECustomerStatus), arg);
     }
 }

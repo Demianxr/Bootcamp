@@ -1,16 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿public class UpdateDepositModel
+{
+    public string AccountId { get; set; }
+    public string BankId { get; set; }
+    public decimal Amount { get; set; }
 
-    public class UpdateDepositModel
+    public bool IsValid()
     {
-        [Required]
-        public string AccountId { get; set; }
-
-        [Required]
-        public string BankId { get; set; }
-
-        [Required]
-        [Range(0.01, 100000)] // Límite operacional
-        public decimal Amount { get; set; }
+        // Verifica que el monto sea positivo y que los IDs de la cuenta y del banco no estén vacíos
+        return Amount > 0 && !string.IsNullOrEmpty(AccountId) && !string.IsNullOrEmpty(BankId);
     }
-
+}

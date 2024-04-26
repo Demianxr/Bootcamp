@@ -1,29 +1,33 @@
-﻿using Core.Entities;
+﻿
+using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+namespace Infrastructure.Configurations;
+
 public class ServicePaymentConfiguration : IEntityTypeConfiguration<ServicePayment>
 {
-    public void Configure(EntityTypeBuilder<ServicePayment> builder)
+    public void Configure(EntityTypeBuilder<ServicePayment> entity)
     {
-        builder.HasKey(sp => sp.Id);
+        entity
+            .HasKey(e => e.Id)
+            .HasName("Payment_pkey");
 
-        builder.Property(sp => sp.DocumentNumber)
-            .IsRequired()
-            .HasMaxLength(50);
+        entity
+            .Property(e => e.Description)
+            .HasMaxLength(300);
 
-        builder.Property(sp => sp.Amount)
-            .IsRequired();
+        entity
+            .Property(e => e.Amount)
+            .HasPrecision(20, 5);
 
-        builder.Property(sp => sp.Description)
-            .IsRequired()
-            .HasMaxLength(200);
 
-        builder.Property(sp => sp.DebitAccountId)
-            .IsRequired();
+        entity.HasOne(d => d.Account)
+            .WithMany(p => p.Payments)
+            .HasForeignKey(d => d.AccountId);
 
-        builder.Property(sp => sp.PaymentDate)
-            .IsRequired();
+        entity.HasOne(d => d.Service)
+            .WithMany(p => p.Payments)
+            .HasForeignKey(d => d.ServiceId);
     }
 }
-

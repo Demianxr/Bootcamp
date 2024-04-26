@@ -1,35 +1,48 @@
-﻿using AutoMapper;
-using Core.Constants;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Models;
-using Core.Requests;
+using Core.Request;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Mappings
+namespace Infrastructure.Mappings;
+
+public class MovementMappingConfiguration : IRegister
 {
-    public class MovementMappingConfiguration : Profile
+    public void Register(TypeAdapterConfig config)
     {
-        public MovementMappingConfiguration()
-        {
-            CreateMap<Movement, MovementDTO>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Destination, opt => opt.MapFrom(src => src.Destination))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.TransferredDateTime, opt => opt.MapFrom(src => src.TransferredDateTime))
-                .ForMember(dest => dest.TransferStatus, opt => opt.MapFrom(src => src.TransferStatus.ToString()))
-                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId));
+        config.NewConfig<CreateMovementModel, Movement>()
+           //.Map(dest => dest.MovementType, src => src.MovementType)
+           .Map(dest => dest.Description, src =>
+                $"{src.Description}," +
+                $"Destination Bank: {src.DestinationBankId}," +
+                $"Destination Account Number: " + $"{src.DestinationAccountNumber}," +
+                $"Destination Document Number: " + $"{src.DestinationDocumentNumber}," +
+                $"Currency: " + $"{src.CurrencyId},")
 
-            CreateMap<CreateMovementModel, Movement>()
-                .ForMember(dest => dest.Destination, opt => opt.MapFrom(src => src.Destination))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId))
-                .ForMember(dest => dest.TransferredDateTime, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.TransferStatus, opt => opt.MapFrom(src => TransferStatus.Pending));
+           .Map(dest => dest.Amount, src => src.Amount)
+           .Map(dest => dest.TransferredDateTime, src => src.TransferredDateTime)
+           //.Map(dest => dest.TransferStatus, src => src.TransferStatus)
+           .Map(dest => dest.AccountSourceId, src => src.AccountSourceId)
+           .Map(dest => dest.AccountDestinationId, src => src.AccountDestinationId);
 
-            CreateMap<UpdateMovementModel, Movement>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Destination, opt => opt.MapFrom(src => src.Destination))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
-                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.AccountId));
-        }
+        config.NewConfig<Movement, MovementDTO>()
+           .Map(dest => dest.Id, src => src.Id)
+           .Map(dest => dest.MovementType, src => src.MovementType)
+           .Map(dest => dest.Description, src => src.Description)
+           .Map(dest => dest.Amount, src => src.Amount)
+           .Map(dest => dest.TransferredDateTime, src => src.TransferredDateTime)
+           .Map(dest => dest.TransferStatus, src => src.TransferStatus)
+           .Map(dest => dest.AccountSource, src => src.AccountSourceId)
+           .Map(dest => dest.AccountDestination, src => src.AccountDestinationId);
+        //.Map(dest => dest.Account, src => new AccountDTO
+        //  {
+        //      Id = src.Account.Id,
+        //      Holder = src.Account.Holder,
+        //      Currency = new CurrencyDTO { Name = src.Account.Currency.Name }, 
+        //      Customer = new CustomerDTO { Name = $"{src.Account.Customer.Name} {src.Account.Customer.Lastname}" }
+        //});
+
+
+
     }
 }

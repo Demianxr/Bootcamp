@@ -1,21 +1,17 @@
-﻿namespace Core.Models
+﻿
+namespace Core.Models;
+
+public class ServicePaymentDTO
 {
-    public class ServicePaymentDTO
-    {
-        
-        public string DocumentNumber { get; set; }
-        public decimal Amount { get; set; }
-        public string Description { get; set; }
-        public int DebitAccountId { get; set; }
+    public int Id { get; set; }
 
-       
-        public ServicePaymentDTO(string documentNumber, decimal amount, string description, int debitAccountId)
-        {
-            this.DocumentNumber = documentNumber;
-            this.Amount = amount;
-            this.Description = description;
-            this.DebitAccountId = debitAccountId;
-        }
-    }
+    public string DocumentNumber { get; set; } = string.Empty;
 
+    public string Description { get; set; } = string.Empty;
+
+    public decimal Amount { get; set; }
+
+    public ServiceDTO Service { get; set; } = null!;
+
+    public AccountDTO Account { get; set; } = null!;
 }

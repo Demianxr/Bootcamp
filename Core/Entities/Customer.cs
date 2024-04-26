@@ -19,7 +19,7 @@ public class Customer
 
     public string? Phone { get; set; }
 
-    public CustomerStatus CustomerStatus { get; set; } = CustomerStatus.Active;
+    public ECustomerStatus CustomerStatus { get; set; } = ECustomerStatus.Active;
 
     public int BankId { get; set; }
     public DateTime? Birth { get; set; }
@@ -27,4 +27,5 @@ public class Customer
     public virtual Bank Bank { get; set; } = null!;
     public ICollection<Account> Accounts { get; set; } = new List<Account>();
     public ICollection<CreditCard> CreditCards { get; set; } = new List<CreditCard>();
+    public ICollection<Request> Requests { get; set; } = new List<Request>();
 }

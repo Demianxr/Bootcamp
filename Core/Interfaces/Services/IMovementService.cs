@@ -1,14 +1,11 @@
 ﻿using Core.Models;
+using Core.Request;
 using Core.Requests;
 
-namespace Core.Interfaces.Services
+namespace Core.Interfaces.Services;
+
+public interface IMovementService
 {
-    public interface IMovementService
-    {
-        Task<IEnumerable<MovementDTO>> GetMovementsAsync(FilterMovementModel filter);
-        Task<MovementDTO> GetMovementByIdAsync(int id);
-        Task CreateMovementAsync(CreateMovementModel movement);
-        Task UpdateMovementAsync(UpdateMovementModel movement);
-        Task DeleteMovementAsync(int id);
-    }
+    Task<MovementDTO> Add(CreateMovementModel model);
+    Task<List<MovementDTO>> GetAll();
 }

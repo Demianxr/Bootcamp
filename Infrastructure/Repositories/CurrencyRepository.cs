@@ -2,10 +2,10 @@
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
-using Core.Requests;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -43,17 +43,6 @@ public class CurrencyRepository : ICurrencyRepository
         var result = await _context.SaveChangesAsync();
 
         return result > 0;
-    }
-
-    public async Task<List<CurrencyDTO>> GetAll()
-    {
-        //var banks = await _context.Banks.ToListAsync();
-
-        var currencies = await _context.Currency.ToListAsync();
-
-        var currencyDTO = currencies.Adapt<List<CurrencyDTO>>();
-
-        return currencyDTO;
     }
 
     public async Task<CurrencyDTO> GetById(int id)

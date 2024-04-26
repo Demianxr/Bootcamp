@@ -1,13 +1,14 @@
-﻿using Core.Entities;
+﻿using Core.Models;
+using Core.Request;
 
-namespace Core.Interfaces.Repositories
+namespace Core.Interfaces.Repositories;
+
+public interface IServicePaymentRepository
 {
-    public interface IServicePaymentRepository
-    {
-        Task<ServicePayment> GetByIdAsync(int id);
-        Task<IEnumerable<ServicePayment>> GetAllAsync();
-        Task<ServicePayment> AddAsync(ServicePayment servicePayment);
-        Task<ServicePayment> UpdateAsync(ServicePayment servicePayment);
-        Task DeleteAsync(int id);
-    }
+    Task<List<ServicePaymentDTO>> GetAll();
+    Task<ServicePaymentDTO> Add(CreateServicePaymentModel model);
+    Task<bool> VerifyServiceExists(int productId);
+    Task<bool> IsSufficientBalance(int sourceAccountId, decimal amount);
+    Task<bool> DoesAccountExist(int accountId);
+
 }

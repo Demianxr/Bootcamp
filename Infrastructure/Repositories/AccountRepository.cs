@@ -1,4 +1,4 @@
-﻿﻿using Core.Constants;
+﻿using Core.Constants;
 using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
@@ -24,12 +24,12 @@ public class AccountRepository : IAccountRepository
 
         var account = model.Adapt<Account>();
 
-        if (account.AccountType == AccountType.Saving)
+        if (account.AccountType == EAccountType.Saving)
         {
             account.SavingAccount = model.CreateSavingAccountModel.Adapt<SavingAccount>();
         }
 
-        if (account.AccountType == AccountType.Current)
+        if (account.AccountType == EAccountType.Current)
         {
             account.CurrentAccount = model.CreateCurrentAccountModel.Adapt<CurrentAccount>();
         }
@@ -59,7 +59,7 @@ public class AccountRepository : IAccountRepository
             .Include(a => a.CurrentAccount)
             .FirstOrDefaultAsync(x => x.Id == id);
 
-        if (account is null) throw new NotFoundException($"The account with id: {id} doest not exist");
+        if (account is null) throw new BusinessLogicException($"The account with id: {id} doest not exist");
 
         return account.Adapt<AccountDTO>();
 
@@ -69,16 +69,15 @@ public class AccountRepository : IAccountRepository
     {
         var account = await _context.Accounts.FindAsync(id);
 
-        if (account is null)
-        {
-            throw new NotFoundException($"The account with id: {id} does not exist"); 
-        }
+        if (account is null) throw new BusinessLogicException("Account with ID " + id + " was not found");
 
-        _context.Accounts.Remove(account);
+        account.IsDeleted = EIsDeleteStatus.True;
+
+        account.AccountStatus = EAccountStatus.Inactive;
 
         var result = await _context.SaveChangesAsync();
 
-        return result > 0;
+        return result > 0; ;
     }
 
     public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
@@ -140,7 +139,7 @@ public class AccountRepository : IAccountRepository
 
         var account = await _context.Accounts.FindAsync(model.Id);
 
-        if (account is null) throw new Exception("Account was not found");
+        if (account is null) throw new BusinessLogicException("Account was not found");
 
         model.Adapt(account);
 
@@ -153,19 +152,11 @@ public class AccountRepository : IAccountRepository
         return accountDTO;
     }
 
-    public async Task<bool> VerifyCustomerExists(int id)
+    public async Task<(bool customerExists, bool currencyExists)> VerifyCustomerAndCurrencyExist(int customerId, int currencyId)
     {
-        var customerDoesntExist = await _context.Customers.AnyAsync(customer => customer.Id == id);
+        var customerExists = await _context.Customers.AnyAsync(c => c.Id == customerId);
+        var currencyExists = await _context.Currency.AnyAsync(c => c.Id == currencyId);
 
-        return !customerDoesntExist;
-
-    }
-
-    public async Task<bool> VerifyCurrencyExists(int id)
-    {
-        var currencyDoesntExist = await _context.Currency.AnyAsync(currency => currency.Id == id);
-
-        return !currencyDoesntExist;
-
+        return (customerExists, currencyExists);
     }
 }

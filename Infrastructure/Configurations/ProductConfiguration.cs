@@ -2,24 +2,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Core.EntityConfigurations
+namespace Infrastructure.Configurations;
+
+public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<Product>
+    public void Configure(EntityTypeBuilder<Product> entity)
     {
-        public void Configure(EntityTypeBuilder<Product> builder)
-        {
-            builder.ToTable("Products");
+        entity
+            .ToTable("Products");
 
-            builder.HasKey(p => p.Id);
+        entity
+           .HasKey(e => e.Id)
+           .HasName("Product_pkey");
 
-            builder.Property(p => p.Name).IsRequired().HasMaxLength(50);
-            builder.Property(p => p.Amount).IsRequired();
-            builder.Property(p => p.Term).IsRequired();
-            builder.Property(p => p.Brand).HasMaxLength(50);
-            builder.Property(p => p.InitialDeposit).IsRequired();
-            builder.Property(p => p.Currency).IsRequired().HasMaxLength(3);
-            builder.Property(p => p.RequestDate).IsRequired();
-            builder.Property(p => p.ApprovalDate);
-        }
+        entity
+            .Property(e => e.Name)
+            .HasMaxLength(100)
+            .IsRequired();
     }
 }

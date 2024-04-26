@@ -3,35 +3,32 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
-using MapsterMapper;
+using Infrastructure.Repositories;
 
 namespace Infrastructure.Services;
 
 public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
-    private readonly IMapper _mapper;
 
-    public AccountService(IAccountRepository accountRepository, IMapper mapper)
+    public AccountService(IAccountRepository accountRepository)
     {
         _accountRepository = accountRepository;
-        _mapper = mapper;
     }
 
     public async Task<AccountDTO> Add(CreateAccountModel model)
     {
-        bool customerDoesntExist = await _accountRepository.VerifyCustomerExists(model.CustomerId);
-        if (customerDoesntExist)
+        var (customerExists, currencyExists) = await _accountRepository.VerifyCustomerAndCurrencyExist(model.CustomerId, model.CurrencyId);
+
+        if (!customerExists)
         {
-            throw new CustomerNotFoundException(model.CustomerId);
+            throw new BusinessLogicException($"Customer {model.CustomerId} does not exist.");
         }
 
-        bool currencyDoesntExist = await _accountRepository.VerifyCurrencyExists(model.CurrencyId);
-        if (currencyDoesntExist)
+        if (!currencyExists)
         {
-            throw new CurrencyNotFoundException(model.CurrencyId);
+            throw new BusinessLogicException($"Currency {model.CurrencyId} does not exist.");
         }
-
         return await _accountRepository.Add(model);
     }
 
@@ -50,20 +47,3 @@ public class AccountService : IAccountService
         return await _accountRepository.Update(model);
     }
 }
-public class CustomerNotFoundException : BusinessLogicException
-{
-    public CustomerNotFoundException(int customerId) : base($"Customer {customerId} does not exist")
-    {
-    }
-}
-
-public class CurrencyNotFoundException : BusinessLogicException
-{
-    public CurrencyNotFoundException(int currencyId) : base($"Currency {currencyId} does not exist")
-    {
-    }
-
-
-
-}
-

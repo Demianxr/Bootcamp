@@ -9,6 +9,5 @@ public interface IAccountRepository
     Task<AccountDTO> Add(CreateAccountModel model);
     Task<AccountDTO> Update(UpdateAccountModel model);
     Task<bool> Delete(int id);
-    Task<bool> VerifyCustomerExists(int id);
-    Task<bool> VerifyCurrencyExists(int id);
+    Task<(bool customerExists, bool currencyExists)> VerifyCustomerAndCurrencyExist(int customerId, int currencyId);
 }

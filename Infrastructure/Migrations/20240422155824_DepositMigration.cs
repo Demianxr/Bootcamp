@@ -116,12 +116,8 @@ namespace Infrastructure.Migrations
                 nullable: false,
                 defaultValue: 0m);
 
-            migrationBuilder.AddColumn<string>(
-                name: "AccountType",
-                table: "Accounts",
-                type: "varchar(20)",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"AccountType\" TYPE integer USING \"AccountType\"::integer;");
+
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "OpeningDate",

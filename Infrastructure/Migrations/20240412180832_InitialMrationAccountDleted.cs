@@ -49,10 +49,8 @@ namespace Infrastructure.Migrations
                 name: "IsDeleted",
                 table: "Accounts");
 
-            migrationBuilder.RenameColumn(
-                name: "AccountType",
-                table: "Accounts",
-                newName: "Status");
+            migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"AccountType\" TYPE integer USING \"AccountType\"::integer;");
+
 
             migrationBuilder.Sql("ALTER TABLE \"Accounts\" ALTER COLUMN \"Type\" TYPE integer USING \"Type\"::integer;");
 

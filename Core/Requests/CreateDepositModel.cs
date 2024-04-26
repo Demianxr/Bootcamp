@@ -1,14 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Core.Request;
 
-    public class CreateDepositModel
-    {
-        [Required]
-        public string AccountId { get; set; }
+public class CreateDepositModel
+{
+    public decimal Amount { get; set; }
 
-        [Required]
-        public string BankId { get; set; }
+    public string? Description { get; set; }
 
-        [Required]
-        public decimal Amount { get; set; }
-    }
+    public DateTime DepositDateTime { get; set; }
 
+    public int AccountId { get; set; }
+
+    public int BankId { get; set; }
+}

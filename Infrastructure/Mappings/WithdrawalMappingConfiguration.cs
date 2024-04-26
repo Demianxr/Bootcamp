@@ -1,24 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Core.Entities;
+using Core.Models;
+using Core.Request;
+using Mapster;
 
-public class WithdrawalMappingConfiguration : IEntityTypeConfiguration<Withdrawal>
+namespace Infrastructure.Mappings;
+
+public class WithdrawalMappingConfiguration : IRegister
 {
-    public void Configure(EntityTypeBuilder<Withdrawal> builder)
+    public void Register(TypeAdapterConfig config)
     {
-        builder.HasKey(w => w.AccountId);
+        config.NewConfig<CreateWithdrawalModel, Withdrawal>()
+          .Map(dest => dest.Amount, src => src.Amount)
+          .Map(dest => dest.WithdrawalDateTime, src => src.WithdrawalDateTime)
+          .Map(dest => dest.AccountId, src => src.AccountId);
 
-        builder.Property(w => w.AccountId)
-            .IsRequired();
-
-        builder.Property(w => w.BankId)
-            .IsRequired();
-
-        builder.Property(w => w.Amount)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
-
-        builder.Property(w => w.TransactionDate)
-            .IsRequired()
-            .HasColumnType("timestamp with time zone");
+        config.NewConfig<Withdrawal, WithdrawalDTO>()
+         .Map(dest => dest.Id, src => src.Id)
+         .Map(dest => dest.Amount, src => src.Amount)
+         .Map(dest => dest.WithdrawalDateTime, src => src.WithdrawalDateTime)
+         .Map(dest => dest.Account, src => src.Account);
     }
 }

@@ -1,26 +1,29 @@
-﻿using Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+using Core.Entities;
 
-public class TransferConfiguration : IEntityTypeConfiguration<Transfer>
+namespace Infrastructure.Data.Config
 {
-    public void Configure(EntityTypeBuilder<Transfer> builder)
+    public class TransferConfiguration : IEntityTypeConfiguration<Transfer>
     {
-        builder.HasKey(t => t.Id);
+        public void Configure(EntityTypeBuilder<Transfer> builder)
+        {
+            builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.OriginAccountId).IsRequired();
-        builder.Property(t => t.DestinationAccountId).IsRequired();
-        builder.Property(t => t.Amount).IsRequired().HasColumnType("decimal(18,2)");
-        builder.Property(t => t.TransferDate).IsRequired();
+            // Configura las relaciones con otras entidades (si es necesario)
+             //builder.HasOne(t => t.OriginAccount).WithMany().HasForeignKey(t => t.OriginAccountId);
+             //builder.HasOne(t => t.DestinationAccount).WithMany().HasForeignKey(t => t.DestinationAccountId);
 
-        //builder.HasOne(t => t.OriginAccount)
-            //.WithMany(a => a.Movements)
-            //.HasForeignKey(t => t.OriginAccountId)
-            //.OnDelete(DeleteBehavior.Restrict);
+            // Configura propiedades (si es necesario)
+            // builder.Property(t => t.Amount).HasColumnType("decimal(18, 2)");
 
-        builder.HasOne(t => t.DestinationAccount)
-            .WithMany()
-            .HasForeignKey(t => t.DestinationAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+            // Validaciones personalizadas
+            builder.HasCheckConstraint("CHK_SameCurrency", "[OriginAccountId] <> [DestinationAccountId]");
+            builder.HasCheckConstraint("CHK_AmountPositive", "[Amount] > 0");
+            builder.HasCheckConstraint("CHK_OriginAccountActive", "[OriginAccount].[IsActive] = 1");
+            builder.HasCheckConstraint("CHK_WithinOperationalLimit", "[Amount] <= [OriginAccount].[OperationalLimit]");
+
+            // Otros ajustes de configuración según tus necesidades
+        }
     }
 }

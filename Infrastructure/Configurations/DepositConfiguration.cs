@@ -1,29 +1,23 @@
-﻿using BankAPI;
-using Core.Entities;
+﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class DepositConfiguration : IEntityTypeConfiguration<Deposit>
 {
-    public class DepositConfiguration : IEntityTypeConfiguration<Deposit>
+    public void Configure(EntityTypeBuilder<Deposit> entity)
     {
-        public void Configure(EntityTypeBuilder<Deposit> builder)
-        {
-            builder.HasKey(d => d.AccountId);
+        entity
+           .HasKey(e => e.Id)
+           .HasName("Deposit_pkey");
 
-            builder.Property(d => d.AccountId)
-                .IsRequired();
+        entity
+         .Property(e => e.Amount)
+         .HasPrecision(20, 5);
 
-            builder.Property(d => d.BankId)
-                .IsRequired();
-
-            builder.Property(d => d.Amount)
-                .IsRequired()
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(d => d.TransactionDate)
-                .IsRequired();
-        }
+        entity.HasOne(d => d.Account)
+           .WithMany(p => p.Deposits)
+           .HasForeignKey(d => d.AccountId);
     }
 }
-
