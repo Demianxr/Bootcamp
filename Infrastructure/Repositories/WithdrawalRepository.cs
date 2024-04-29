@@ -1,5 +1,4 @@
-﻿using Core.Constants;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
@@ -46,14 +45,11 @@ public class WithdrawalRepository : IWithdrawalRepository
         {
             if (account.Balance < amount)
             {
-                // Si el saldo de la cuenta es menor que el monto de la extracción, lanzar una excepción de negocio
                 throw new BusinessLogicException("Insufficient balance in the account to process this withdrawal.");
             }
 
-            // Actualizar el saldo de la cuenta
             account.Balance -= amount;
 
-            // Guardar los cambios en la base de datos
             await _context.SaveChangesAsync();
         }
     }

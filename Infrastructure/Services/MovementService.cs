@@ -1,8 +1,11 @@
-﻿using Core.Exceptions;
+﻿
+using Core.Constants;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
+using FluentValidation;
 
 namespace Infrastructure.Services;
 
@@ -13,8 +16,8 @@ public class MovementService : IMovementService
 
     public MovementService(IMovementRepository movementRepository, ITransferValidationService validationService)
     {
-        _movementRepository = movementRepository; // Inyectado
-        _validationService = validationService; // Inyectado
+        _movementRepository = movementRepository;
+        _validationService = validationService;
     }
     public async Task<MovementDTO> Add(CreateMovementModel model)
     {
